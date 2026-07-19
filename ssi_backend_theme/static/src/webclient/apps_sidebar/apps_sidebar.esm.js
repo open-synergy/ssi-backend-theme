@@ -113,6 +113,56 @@ export class AppsSidebar extends Component {
         });
     }
 
+    /**
+     * Whether the active theme's `show_sidebar_logo` (issue #16) allows the
+     * company logo header block to render. Anything other than exactly
+     * `false` is treated as shown, matching `ssiShowAppsSidebar`
+     * (navbar_patch.esm.js).
+     *
+     * @returns {Boolean}
+     */
+    get showLogo() {
+        const backendTheme = session.backend_theme || {};
+        return backendTheme.show_sidebar_logo !== false;
+    }
+
+    /**
+     * Whether the active theme's `show_sidebar_recent` (issue #16) allows
+     * the RECENT tab in the sidebar's footer panel. Passed down to
+     * `SidebarFooter` (sidebar_footer.esm.js), which owns tab-level
+     * rendering.
+     *
+     * @returns {Boolean}
+     */
+    get showRecentTab() {
+        const backendTheme = session.backend_theme || {};
+        return backendTheme.show_sidebar_recent !== false;
+    }
+
+    /**
+     * Whether the active theme's `show_sidebar_bookmarks` (issue #16)
+     * allows the BOOKMARKS tab in the sidebar's footer panel.
+     *
+     * @returns {Boolean}
+     */
+    get showBookmarksTab() {
+        const backendTheme = session.backend_theme || {};
+        return backendTheme.show_sidebar_bookmarks !== false;
+    }
+
+    /**
+     * Whether the footer panel (`<SidebarFooter/>`, issue #13) should be
+     * rendered at all: `false` only when BOTH `show_sidebar_recent` and
+     * `show_sidebar_bookmarks` (issue #16) are `false`. Tab-level
+     * visibility within an already-rendered footer is handled by
+     * `SidebarFooter` itself (sidebar_footer.esm.js).
+     *
+     * @returns {Boolean}
+     */
+    get showFooter() {
+        return this.showRecentTab || this.showBookmarksTab;
+    }
+
     get apps() {
         return this.menuService.getApps();
     }

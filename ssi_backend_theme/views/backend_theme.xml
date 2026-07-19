@@ -107,6 +107,12 @@
                             <field name="sidebar_default" />
                             <field name="color_scheme_default" />
                         </group>
+                        <group name="defaults_group_2" string="Sidebar Visibility">
+                            <field name="show_sidebar" />
+                            <field name="show_sidebar_logo" />
+                            <field name="show_sidebar_recent" />
+                            <field name="show_sidebar_bookmarks" />
+                        </group>
                     </page>
                 </xpath>
             </data>
