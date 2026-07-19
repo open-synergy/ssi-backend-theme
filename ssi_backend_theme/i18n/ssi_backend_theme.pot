@@ -131,6 +131,60 @@ msgid ""
 msgstr ""
 
 #. module: ssi_backend_theme
+#: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme__navbar_entry_border_radius
+msgid ""
+"CSS length (px, rem, em, %, or a bare 0) for the corner radius of each "
+"navbar entry. Matches Odoo's own default of \"0\". Leave empty to use the "
+"default radius."
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme__form_spacing
+msgid ""
+"CSS length (px, rem, em, %, or a bare 0) for the density between fields on a"
+" form view. Leave empty to use the default spacing."
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme__navbar_entry_margin_h
+msgid ""
+"CSS length (px, rem, em, %, or a bare 0) for the horizontal margin of each "
+"navbar entry. Matches Odoo's own default of \"0\". Leave empty to use the "
+"default margin."
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme__navbar_entry_padding_h
+msgid ""
+"CSS length (px, rem, em, %, or a bare 0) for the horizontal padding of each "
+"navbar entry. Matches Odoo's own default of \"0.63em\". Leave empty to use "
+"the default padding."
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme__paragraph_spacing
+msgid ""
+"CSS length (px, rem, em, %, or a bare 0) for the space below a paragraph of "
+"backend text. Leave empty to use the default spacing."
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme__navbar_font_size
+msgid ""
+"CSS length (px, rem, em, %, or a bare 0) for the top navigation bar font "
+"size. Matches Odoo's own default of \"1rem\". Leave empty to use the default"
+" size."
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme__navbar_height
+msgid ""
+"CSS length (px, rem, em, %, or a bare 0) for the top navigation bar height. "
+"Matches Odoo's own default of \"46px\". Leave empty to use the default "
+"height."
+msgstr ""
+
+#. module: ssi_backend_theme
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__code
 msgid "Code"
 msgstr ""
@@ -266,6 +320,11 @@ msgstr ""
 #. module: ssi_backend_theme
 #: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__form_spacing
+msgid "Form Spacing"
 msgstr ""
 
 #. module: ssi_backend_theme
@@ -490,8 +549,48 @@ msgid "Name"
 msgstr ""
 
 #. module: ssi_backend_theme
+#: model_terms:ir.ui.view,arch_db:ssi_backend_theme.backend_theme_view_form
+msgid "Navbar"
+msgstr ""
+
+#. module: ssi_backend_theme
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__color_navbar_bg
 msgid "Navbar Background Color"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__navbar_entry_border_radius
+msgid "Navbar Entry Border Radius"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__navbar_entry_margin_h
+msgid "Navbar Entry Horizontal Margin"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__navbar_entry_padding_h
+msgid "Navbar Entry Horizontal Padding"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model_terms:ir.ui.view,arch_db:ssi_backend_theme.backend_theme_view_form
+msgid "Navbar Entry Spacing"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__navbar_font_size
+msgid "Navbar Font Size"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__navbar_height
+msgid "Navbar Height"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model_terms:ir.ui.view,arch_db:ssi_backend_theme.backend_theme_view_form
+msgid "Navbar Sizing"
 msgstr ""
 
 #. module: ssi_backend_theme
@@ -559,6 +658,11 @@ msgid ""
 msgstr ""
 
 #. module: ssi_backend_theme
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__paragraph_spacing
+msgid "Paragraph Spacing"
+msgstr ""
+
+#. module: ssi_backend_theme
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__color_primary
 msgid "Primary Color"
 msgstr ""
@@ -583,6 +687,11 @@ msgstr ""
 #. module: ssi_backend_theme
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme_bookmark__sequence
 msgid "Sequence"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model_terms:ir.ui.view,arch_db:ssi_backend_theme.backend_theme_view_form
+msgid "Spacing"
 msgstr ""
 
 #. module: ssi_backend_theme
