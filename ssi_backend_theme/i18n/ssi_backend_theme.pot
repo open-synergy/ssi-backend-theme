@@ -690,6 +690,31 @@ msgid "Sequence"
 msgstr ""
 
 #. module: ssi_backend_theme
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__show_sidebar
+msgid "Show Sidebar"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__show_sidebar_bookmarks
+msgid "Show Sidebar Bookmarks"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__show_sidebar_logo
+msgid "Show Sidebar Logo"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__show_sidebar_recent
+msgid "Show Sidebar Recent"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model_terms:ir.ui.view,arch_db:ssi_backend_theme.backend_theme_view_form
+msgid "Sidebar Visibility"
+msgstr ""
+
+#. module: ssi_backend_theme
 #: model_terms:ir.ui.view,arch_db:ssi_backend_theme.backend_theme_view_form
 msgid "Spacing"
 msgstr ""
@@ -738,6 +763,29 @@ msgstr ""
 #. module: ssi_backend_theme
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme_bookmark__action_url
 msgid "URL"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme__show_sidebar_bookmarks
+msgid "Uncheck to hide the BOOKMARKS tab from the sidebar's footer panel."
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme__show_sidebar_recent
+msgid "Uncheck to hide the RECENT tab from the sidebar's footer panel."
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme__show_sidebar_logo
+msgid "Uncheck to hide the company logo header at the top of the sidebar."
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme__show_sidebar
+msgid ""
+"Uncheck to hide the entire navigation sidebar and shift the backend back to "
+"Odoo's default layout, with no space left on the left side. The fields below"
+" are ignored while this is unchecked."
 msgstr ""
 
 #. module: ssi_backend_theme
