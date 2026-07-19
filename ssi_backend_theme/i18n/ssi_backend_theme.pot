@@ -55,6 +55,11 @@ msgid "Attachment Count"
 msgstr ""
 
 #. module: ssi_backend_theme
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_res_users__backend_theme_color_scheme
+msgid "Backend Color Scheme"
+msgstr ""
+
+#. module: ssi_backend_theme
 #: model:ir.actions.act_window,name:ssi_backend_theme.backend_theme_action
 #: model:ir.model,name:ssi_backend_theme.model_backend_theme
 #: model:ir.module.category,name:ssi_backend_theme.backend_theme_module_category
@@ -140,6 +145,7 @@ msgstr ""
 
 #. module: ssi_backend_theme
 #: model:ir.model.fields.selection,name:ssi_backend_theme.selection__backend_theme__color_scheme_default__dark
+#: model:ir.model.fields.selection,name:ssi_backend_theme.selection__res_users__backend_theme_color_scheme__dark
 msgid "Dark"
 msgstr ""
 
@@ -179,6 +185,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__display_name
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_ir_http__display_name
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_res_users__display_name
 msgid "Display Name"
 msgstr ""
 
@@ -253,6 +260,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__id
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_ir_http__id
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_res_config_settings__id
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_res_users__id
 msgid "ID"
 msgstr ""
 
@@ -298,7 +306,16 @@ msgstr ""
 
 #. module: ssi_backend_theme
 #: model:ir.model.fields.selection,name:ssi_backend_theme.selection__backend_theme__color_scheme_default__light
+#: model:ir.model.fields.selection,name:ssi_backend_theme.selection__res_users__backend_theme_color_scheme__light
 msgid "Light"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,help:ssi_backend_theme.field_res_users__backend_theme_color_scheme
+msgid ""
+"Light or dark color scheme applied to your own backend UI. Takes effect "
+"after the browser reloads. Leave empty to use the active backend theme's "
+"default."
 msgstr ""
 
 #. module: ssi_backend_theme
@@ -413,6 +430,18 @@ msgid ""
 msgstr ""
 
 #. module: ssi_backend_theme
+#. odoo-javascript
+#: code:addons/ssi_backend_theme/static/src/webclient/color_scheme/color_scheme_systray.esm.js:0
+msgid "Switch to dark mode"
+msgstr ""
+
+#. module: ssi_backend_theme
+#. odoo-javascript
+#: code:addons/ssi_backend_theme/static/src/webclient/color_scheme/color_scheme_systray.esm.js:0
+msgid "Switch to light mode"
+msgstr ""
+
+#. module: ssi_backend_theme
 #: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme__activity_exception_decoration
 msgid "Type of the exception activity on record."
 msgstr ""
@@ -420,4 +449,9 @@ msgstr ""
 #. module: ssi_backend_theme
 #: model_terms:ir.ui.view,arch_db:ssi_backend_theme.backend_theme_view_form
 msgid "Typography"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model,name:ssi_backend_theme.model_res_users
+msgid "User"
 msgstr ""
