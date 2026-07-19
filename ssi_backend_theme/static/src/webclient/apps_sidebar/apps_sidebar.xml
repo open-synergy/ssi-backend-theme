@@ -64,6 +64,10 @@
                     </li>
                 </t>
             </ul>
+            <!-- RECENT/BOOKMARKS panel (issue #13): only while expanded;
+                 fully absent from the DOM, not just visually hidden, when
+                 collapsed. -->
+            <SidebarFooter t-if="!state.collapsed" />
         </aside>
     </t>
 

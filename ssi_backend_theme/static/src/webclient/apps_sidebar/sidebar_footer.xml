@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="ssi_backend_theme.SidebarFooter">
+        <div class="o_ssi_sidebar_footer d-flex flex-column flex-grow-1 overflow-hidden">
+            <div class="o_ssi_sidebar_footer_tabs d-flex flex-shrink-0" role="tablist">
+                <button
+                    type="button"
+                    class="o_ssi_sidebar_footer_tab btn btn-sm flex-fill bg-transparent border-0 rounded-0 text-truncate"
+                    t-att-class="{active: isRecentTab}"
+                    role="tab"
+                    t-att-aria-selected="isRecentTab"
+                    t-on-click="() => this.selectTab('recent')"
+                >
+                    Recent
+                </button>
+                <button
+                    type="button"
+                    class="o_ssi_sidebar_footer_tab btn btn-sm flex-fill bg-transparent border-0 rounded-0 text-truncate"
+                    t-att-class="{active: isBookmarksTab}"
+                    role="tab"
+                    t-att-aria-selected="isBookmarksTab"
+                    t-on-click="() => this.selectTab('bookmarks')"
+                >
+                    Bookmarks
+                </button>
+            </div>
+            <div class="o_ssi_sidebar_footer_body flex-grow-1 overflow-auto" role="tabpanel">
+                <t t-if="isRecentTab">
+                    <ul class="o_ssi_sidebar_footer_list list-unstyled mb-0">
+                        <li
+                            t-if="!recentItems.length"
+                            class="o_ssi_sidebar_footer_empty text-muted small"
+                        >
+                            No recently opened records
+                        </li>
+                        <li t-foreach="recentItems" t-as="item" t-key="item.url">
+                            <a
+                                href="#"
+                                t-att-href="item.url"
+                                t-att-title="item.name"
+                                class="d-flex align-items-center text-truncate"
+                                t-on-click.prevent="() => this.openEntry(item)"
+                                t-esc="item.name"
+                            />
+                        </li>
+                    </ul>
+                </t>
+                <t t-if="isBookmarksTab">
+                    <div class="o_ssi_sidebar_footer_bookmark_actions flex-shrink-0">
+                        <button
+                            type="button"
+                            class="btn btn-sm bg-transparent border-0 text-truncate w-100 text-start"
+                            t-att-disabled="!canBookmarkCurrentRecord"
+                            t-att-title="addBookmarkLabel"
+                            t-on-click="addBookmark"
+                        >
+                            <i class="fa fa-plus me-1" aria-hidden="true" />
+                            <t t-esc="addBookmarkLabel" />
+                        </button>
+                    </div>
+                    <ul class="o_ssi_sidebar_footer_list list-unstyled mb-0">
+                        <li
+                            t-if="!state.bookmarks.length"
+                            class="o_ssi_sidebar_footer_empty text-muted small"
+                        >
+                            No bookmarks yet
+                        </li>
+                        <li
+                            t-foreach="state.bookmarks"
+                            t-as="bookmark"
+                            t-key="bookmark.id"
+                            class="d-flex align-items-center"
+                        >
+                            <a
+                                href="#"
+                                t-att-href="bookmark.action_url"
+                                t-att-title="bookmark.name"
+                                class="d-flex align-items-center text-truncate flex-grow-1"
+                                t-on-click.prevent="() => this.openEntry({name: bookmark.name, url: bookmark.action_url})"
+                                t-esc="bookmark.name"
+                            />
+                            <button
+                                type="button"
+                                class="o_ssi_sidebar_footer_bookmark_remove btn btn-sm bg-transparent border-0 flex-shrink-0"
+                                title="Remove bookmark"
+                                t-on-click="() => this.removeBookmark(bookmark)"
+                            >
+                                <i class="fa fa-times" aria-hidden="true" />
+                            </button>
+                        </li>
+                    </ul>
+                </t>
+            </div>
+        </div>
+    </t>
+
+</templates>

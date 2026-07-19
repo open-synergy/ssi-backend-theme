@@ -1,0 +1,114 @@
+scenarios:
+  - name: "Create bookmark with only name and action_url"
+    steps:
+      - step: "Create bookmark leaving user_id and sequence to their defaults"
+        action: "create"
+        model: "backend_theme_bookmark"
+        save_as: "bookmark"
+        values:
+          name: "My Dashboard"
+          action_url: "/odoo/action-123"
+
+      - step: "Assert defaults were applied"
+        action: "assert"
+        target: "bookmark"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "My Dashboard"
+          action_url:
+            type: "value"
+            expected: "/odoo/action-123"
+          user_id:
+            type: "m2o"
+            expected: "REC: user"
+          sequence:
+            type: "value"
+            expected: 10
+
+  - name: "Edit bookmark name"
+    steps:
+      - step: "Create bookmark to edit"
+        action: "create"
+        model: "backend_theme_bookmark"
+        save_as: "bookmark"
+        values:
+          name: "Draft Name"
+          action_url: "/odoo/res.partner/1"
+
+      - step: "Write new name"
+        action: "write"
+        target: "bookmark"
+        values:
+          name: "Final Name"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "bookmark"
+        asserts:
+          name:
+            type: "value"
+            expected: "Final Name"
+
+  - name: "Delete bookmark"
+    steps:
+      - step: "Create bookmark to be deleted"
+        action: "create"
+        model: "backend_theme_bookmark"
+        save_as: "bookmark"
+        values:
+          name: "To Be Deleted"
+          action_url: "/odoo/res.partner/2"
+
+      - step: "Delete the bookmark"
+        action: "unlink"
+        target: "bookmark"
+
+      - step: "Verify the bookmark is gone"
+        action: "search"
+        model: "backend_theme_bookmark"
+        domain: [["action_url", "=", "/odoo/res.partner/2"]]
+        save_as: "result"
+        expect_count: 0
+
+  - name: "A user cannot read another user's bookmark"
+    steps:
+      - step: "Create the bookmark owner"
+        action: "create"
+        model: "res.users"
+        save_as: "owner"
+        values:
+          name: "Bookmark Owner"
+          login: "bookmark_owner@example.com"
+          group_ids: [[6, 0, ["REF: base.group_user"]]]
+
+      - step: "Create a second, unrelated user"
+        action: "create"
+        model: "res.users"
+        save_as: "intruder"
+        values:
+          name: "Bookmark Intruder"
+          login: "bookmark_intruder@example.com"
+          group_ids: [[6, 0, ["REF: base.group_user"]]]
+
+      - step: "Owner creates their own bookmark"
+        action: "create"
+        model: "backend_theme_bookmark"
+        as_user: "owner"
+        save_as: "owner_bookmark"
+        values:
+          name: "Owner's Bookmark"
+          action_url: "/odoo/res.partner/3"
+
+      - step: "Intruder reading it must fail with AccessError"
+        action: "call"
+        target: "owner_bookmark"
+        method: "read"
+        args:
+          - ["name"]
+        as_user: "intruder"
+        expect_error:
+          type: "AccessError"
