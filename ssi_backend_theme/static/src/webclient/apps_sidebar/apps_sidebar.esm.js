@@ -173,6 +173,96 @@ export class AppsSidebar extends Component {
         return this.menuService.getApps();
     }
 
+    /**
+     * Whether the app list should render as titled category groups
+     * (issue #18): only while the active theme's `group_apps_by_category`
+     * is strictly `true` AND the sidebar is expanded — a group title does
+     * not fit the collapsed (icon-only) width, so the list falls back to
+     * the same flat rendering used before this feature existed
+     * (Keputusan Desain, issue #18). Any other value on the session
+     * payload (missing key, `false`, or anything non-boolean) is treated
+     * as `false`, never raised as an error client-side.
+     *
+     * @returns {Boolean}
+     */
+    get isGroupedByCategory() {
+        const backendTheme = session.backend_theme || {};
+        return backendTheme.group_apps_by_category === true && !this.state.collapsed;
+    }
+
+    /**
+     * Ordered app groups keyed by module category (issue #18): built from
+     * the current app list (`this.apps`, order within a group unchanged)
+     * and the `app_categories` map exposed via `session.backend_theme`
+     * (server-side — see `backend_theme._get_app_module_categories()`,
+     * models/backend_theme.py; Odoo 19's own `menuService` payload
+     * carries no category info at all). Ordered by category `sequence`,
+     * then category name ascending, with one trailing group ("Other")
+     * for apps that have no resolvable category. A group with zero apps
+     * is never produced, since a group only ever comes into existence
+     * when the first app is pushed into it below.
+     *
+     * @returns {Array<{key: String, label: String, apps: Array}>}
+     */
+    get appGroups() {
+        const backendTheme = session.backend_theme || {};
+        const appCategories = backendTheme.app_categories || {};
+        const OTHER_KEY = "__other__";
+        const groupsByKey = new Map();
+        for (const app of this.apps) {
+            const category = appCategories[app.id];
+            const hasCategory = Boolean(category && category.name);
+            const key = hasCategory ? `category-${category.id}` : OTHER_KEY;
+            if (!groupsByKey.has(key)) {
+                groupsByKey.set(key, {
+                    key,
+                    label: hasCategory ? category.name : _t("Other"),
+                    sequence: hasCategory
+                        ? category.sequence || 0
+                        : Number.MAX_SAFE_INTEGER,
+                    name: hasCategory ? category.name : "",
+                    apps: [],
+                });
+            }
+            groupsByKey.get(key).apps.push(app);
+        }
+        const groups = [...groupsByKey.values()];
+        groups.sort((a, b) => {
+            if (a.key === OTHER_KEY || b.key === OTHER_KEY) {
+                // "Other" always sorts last, regardless of sequence.
+                return a.key === OTHER_KEY ? 1 : -1;
+            }
+            if (a.sequence !== b.sequence) {
+                return a.sequence - b.sequence;
+            }
+            return a.name.localeCompare(b.name);
+        });
+        return groups;
+    }
+
+    /**
+     * Flattened rows for the app `<ul>` (apps_sidebar.xml): one shape for
+     * both the flat and the grouped rendering, so the template needs only
+     * a single `t-foreach` instead of two branches with duplicated app
+     * markup. A "title" row is only ever produced while `isGroupedByCategory`
+     * is true.
+     *
+     * @returns {Array<{key: String, type: ("title"|"app"), label: String=, app: Object=}>}
+     */
+    get sidebarRows() {
+        if (!this.isGroupedByCategory) {
+            return this.apps.map((app) => ({key: `app-${app.id}`, type: "app", app}));
+        }
+        const rows = [];
+        for (const group of this.appGroups) {
+            rows.push({key: `title-${group.key}`, type: "title", label: group.label});
+            for (const app of group.apps) {
+                rows.push({key: `app-${app.id}`, type: "app", app});
+            }
+        }
+        return rows;
+    }
+
     get currentApp() {
         return this.menuService.getCurrentApp();
     }

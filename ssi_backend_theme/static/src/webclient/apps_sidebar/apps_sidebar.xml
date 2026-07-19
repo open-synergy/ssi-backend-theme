@@ -39,27 +39,36 @@
             <ul
                 class="o_ssi_apps_sidebar_apps list-unstyled flex-shrink-0 overflow-auto mb-0"
             >
-                <t t-foreach="apps" t-as="app" t-key="app.id">
+                <!-- One shape covers both the flat and the grouped-by-category
+                     (issue #18) rendering: `sidebarRows` (apps_sidebar.esm.js)
+                     only ever emits "title" rows while grouping is active. -->
+                <t t-foreach="sidebarRows" t-as="row" t-key="row.key">
                     <li
+                        t-if="row.type === 'title'"
+                        class="o_ssi_apps_sidebar_group_title text-truncate"
+                        t-esc="row.label"
+                    />
+                    <li
+                        t-else=""
                         class="o_ssi_apps_sidebar_app"
-                        t-att-class="{'bg-primary-subtle': isCurrentApp(app)}"
-                        t-att-data-menu-xmlid="app.xmlid"
+                        t-att-class="{'bg-primary-subtle': isCurrentApp(row.app)}"
+                        t-att-data-menu-xmlid="row.app.xmlid"
                     >
                         <a
-                            t-att-href="getMenuItemHref(app)"
-                            t-att-title="app.name"
+                            t-att-href="getMenuItemHref(row.app)"
+                            t-att-title="row.app.name"
                             class="d-flex align-items-center"
-                            t-on-click.prevent="(ev) => this.onAppClick(app, ev)"
+                            t-on-click.prevent="(ev) => this.onAppClick(row.app, ev)"
                         >
                             <img
-                                t-if="app.webIconData"
+                                t-if="row.app.webIconData"
                                 class="o_ssi_apps_sidebar_app_icon flex-shrink-0"
-                                t-attf-src="{{app.webIconData}}"
+                                t-attf-src="{{row.app.webIconData}}"
                                 alt=""
                             />
                             <span
                                 class="o_ssi_apps_sidebar_app_name text-truncate"
-                                t-esc="app.name"
+                                t-esc="row.app.name"
                             />
                         </a>
                     </li>

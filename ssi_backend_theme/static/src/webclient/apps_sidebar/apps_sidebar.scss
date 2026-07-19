@@ -141,6 +141,23 @@ $o-ssi-apps-sidebar-logo-height: 64px !default;
     flex-shrink: 0;
 }
 
+// Group title row (issue #18), rendered only while the active theme's
+// `group_apps_by_category` is on and the sidebar is expanded (never in the
+// DOM otherwise — see `isGroupedByCategory`/`sidebarRows`,
+// apps_sidebar.esm.js). Reuses the same `--NavBar-entry-color` custom
+// property (with the same `$o-navbar-entry-color` fallback) already set on
+// `.o_ssi_apps_sidebar` above, so the title always matches the active
+// theme instead of an embedded color.
+.o_ssi_apps_sidebar_group_title {
+    padding: 0.6rem 0.75rem 0.2rem;
+    font-size: 0.75em;
+    font-weight: bold;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--NavBar-entry-color, #{$o-navbar-entry-color});
+    opacity: 0.7;
+}
+
 // Inline "sidebar" submenu (issue #17): the current app's own sections,
 // rendered directly below the app list -- only while
 // `app_submenu_position` resolves to "sidebar" (apps_sidebar.xml).
