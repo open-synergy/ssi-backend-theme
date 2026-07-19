@@ -144,16 +144,26 @@ class TestBackendThemeScssAsset(YamlTransactionCase):
         )
         self._set_active_theme_param(None)
 
-        theme.write({"color_primary": "#456456"})
-
-        # No active-theme pointer at all: write() must not raise, and
-        # must not fabricate a SCSS override attachment.
-        attachments = (
+        # Snapshot before: other test methods in this class may have
+        # already synced the (global, singleton) SCSS override
+        # attachment — this must stay untouched by this write(), not
+        # necessarily absent.
+        before = (
             self.env["ir.attachment"]
             .sudo()
             .search([("url", "=", SCSS_ASSET_CUSTOM_URL)])
         )
-        self.assertFalse(attachments)
+        before_datas = before.datas if before else False
+
+        theme.write({"color_primary": "#456456"})
+
+        after = (
+            self.env["ir.attachment"]
+            .sudo()
+            .search([("url", "=", SCSS_ASSET_CUSTOM_URL)])
+        )
+        self.assertEqual(len(before), len(after))
+        self.assertEqual(before_datas, after.datas if after else False)
 
     def test_unlink_non_active_theme_does_not_resync(self):
         active_theme = self.env["backend_theme"].create(
