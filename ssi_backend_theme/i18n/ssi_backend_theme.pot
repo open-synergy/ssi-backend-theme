@@ -95,6 +95,11 @@ msgid "Base Font Size"
 msgstr ""
 
 #. module: ssi_backend_theme
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__color_text_body
+msgid "Body Text Color"
+msgstr ""
+
+#. module: ssi_backend_theme
 #. odoo-javascript
 #: code:addons/ssi_backend_theme/static/src/webclient/apps_sidebar/sidebar_footer.esm.js:0
 msgid "Bookmark this record"
@@ -166,6 +171,11 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__create_date
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme_bookmark__create_date
 msgid "Created on"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__color_danger
+msgid "Danger Color"
 msgstr ""
 
 #. module: ssi_backend_theme
@@ -269,6 +279,35 @@ msgid "Has Message"
 msgstr ""
 
 #. module: ssi_backend_theme
+#: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme__color_list_row_hover_bg
+msgid ""
+"Hex CSS color (#rgb or #rrggbb) used as the background color of a list "
+"view's data row when hovered. Leave empty to use the default color, which "
+"follows the Primary Color."
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme__color_list_header_bg
+msgid ""
+"Hex CSS color (#rgb or #rrggbb) used as the background color of a list "
+"view's header row. Leave empty to use the default color."
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme__color_view_background
+msgid ""
+"Hex CSS color (#rgb or #rrggbb) used as the background color of the backend "
+"content area (forms, cards, dialogs). Leave empty to use the default color."
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme__color_text_body
+msgid ""
+"Hex CSS color (#rgb or #rrggbb) used as the main text color across the "
+"backend UI. Leave empty to use the default color."
+msgstr ""
+
+#. module: ssi_backend_theme
 #: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme__color_primary
 msgid ""
 "Hex CSS color (#rgb or #rrggbb) used as the primary brand color of the "
@@ -287,6 +326,34 @@ msgstr ""
 msgid ""
 "Hex CSS color (#rgb or #rrggbb) used as the top navigation bar text color. "
 "Leave empty to use the default color."
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme__color_danger
+msgid ""
+"Hex CSS color (#rgb or #rrggbb) used for danger badges, alerts, and "
+"decorations. Leave empty to use the default color."
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme__color_info
+msgid ""
+"Hex CSS color (#rgb or #rrggbb) used for info badges, alerts, and "
+"decorations. Leave empty to use the default color."
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme__color_success
+msgid ""
+"Hex CSS color (#rgb or #rrggbb) used for success badges, alerts, and "
+"decorations. Leave empty to use the default color."
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme__color_warning
+msgid ""
+"Hex CSS color (#rgb or #rrggbb) used for warning badges, alerts, and "
+"decorations. Leave empty to use the default color."
 msgstr ""
 
 #. module: ssi_backend_theme
@@ -316,6 +383,11 @@ msgstr ""
 #. module: ssi_backend_theme
 #: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme__message_has_error
 msgid "If checked, some messages have a delivery error."
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__color_info
+msgid "Info Color"
 msgstr ""
 
 #. module: ssi_backend_theme
@@ -357,6 +429,21 @@ msgid ""
 "Light or dark color scheme applied to your own backend UI. Takes effect "
 "after the browser reloads. Leave empty to use the active backend theme's "
 "default."
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__color_list_header_bg
+msgid "List Header Background Color"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__color_list_row_hover_bg
+msgid "List Row Hover Background Color"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model_terms:ir.ui.view,arch_db:ssi_backend_theme.backend_theme_view_form
+msgid "List View Colors"
 msgstr ""
 
 #. module: ssi_backend_theme
@@ -499,12 +586,22 @@ msgid "Sequence"
 msgstr ""
 
 #. module: ssi_backend_theme
+#: model_terms:ir.ui.view,arch_db:ssi_backend_theme.backend_theme_view_form
+msgid "Status Colors"
+msgstr ""
+
+#. module: ssi_backend_theme
 #: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme__activity_state
 msgid ""
 "Status based on activities\n"
 "Overdue: Due date is already passed\n"
 "Today: Activity date is today\n"
 "Planned: Future activities."
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__color_success
+msgid "Success Color"
 msgstr ""
 
 #. module: ssi_backend_theme
@@ -538,4 +635,14 @@ msgstr ""
 #: model:ir.model,name:ssi_backend_theme.model_res_users
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme_bookmark__user_id
 msgid "User"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__color_view_background
+msgid "View Background Color"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__color_warning
+msgid "Warning Color"
 msgstr ""
