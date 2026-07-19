@@ -71,6 +71,48 @@ class TestControllerSessionInfo(HttpCase):
         self.assertEqual(backend_theme["font_family"], DEFAULT_FONT_FAMILY)
         self.assertEqual(backend_theme["sidebar_default"], DEFAULT_SIDEBAR_STATE)
         self.assertEqual(DEFAULT_SIDEBAR_STATE, "expanded")
+        # Issue #16: no active theme -> every visibility field is True.
+        self.assertTrue(backend_theme["show_sidebar"])
+        self.assertTrue(backend_theme["show_sidebar_logo"])
+        self.assertTrue(backend_theme["show_sidebar_recent"])
+        self.assertTrue(backend_theme["show_sidebar_bookmarks"])
+
+    def test_session_info_active_theme_sidebar_hidden(self):
+        theme = self.env["backend_theme"].create(
+            {
+                "name": "No Sidebar Theme",
+                "code": "IRH006",
+                "show_sidebar": False,
+            }
+        )
+        self._set_active_theme_param(theme.id)
+
+        backend_theme = self._get_backend_theme_session_info()
+
+        self.assertFalse(backend_theme["show_sidebar"])
+        # The three section switches are ignored while show_sidebar is
+        # False, but their own stored value (still True here) is still
+        # reported as-is -- the client is the one that ignores them.
+        self.assertTrue(backend_theme["show_sidebar_logo"])
+        self.assertTrue(backend_theme["show_sidebar_recent"])
+        self.assertTrue(backend_theme["show_sidebar_bookmarks"])
+
+    def test_session_info_active_theme_sidebar_recent_hidden(self):
+        theme = self.env["backend_theme"].create(
+            {
+                "name": "No Recent Theme",
+                "code": "IRH007",
+                "show_sidebar_recent": False,
+            }
+        )
+        self._set_active_theme_param(theme.id)
+
+        backend_theme = self._get_backend_theme_session_info()
+
+        self.assertFalse(backend_theme["show_sidebar_recent"])
+        self.assertTrue(backend_theme["show_sidebar"])
+        self.assertTrue(backend_theme["show_sidebar_logo"])
+        self.assertTrue(backend_theme["show_sidebar_bookmarks"])
 
     def test_session_info_active_theme_sidebar_collapsed(self):
         theme = self.env["backend_theme"].create(

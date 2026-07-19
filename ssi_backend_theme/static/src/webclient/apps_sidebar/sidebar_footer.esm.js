@@ -4,6 +4,7 @@
 import {Component, onWillStart, useState} from "@odoo/owl";
 import {_t} from "@web/core/l10n/translation";
 import {browser} from "@web/core/browser/browser";
+import {session} from "@web/session";
 import {useService} from "@web/core/utils/hooks";
 
 // Persists which of the two tabs (RECENT / BOOKMARKS) is showing, per
@@ -44,8 +45,29 @@ export class SidebarFooter extends Component {
         this.actionService = useService("action");
         this.recentItemsService = useService("ssi_backend_theme.recent_items");
         this.recentItems = useState(this.recentItemsService.items);
+
+        // Anything other than exactly `false` is treated as shown — same
+        // rule as `showLogo`/`showFooter` (apps_sidebar.esm.js). The parent
+        // already guarantees at least one of the two is true whenever this
+        // component is even rendered (see `showFooter`), but each is still
+        // resolved independently here so hiding one never affects the other.
+        const backendTheme = session.backend_theme || {};
+        this.showRecentTab = backendTheme.show_sidebar_recent !== false;
+        this.showBookmarksTab = backendTheme.show_sidebar_bookmarks !== false;
+
+        // The stored/default tab (issue #13) may point at a tab this
+        // theme just turned off (issue #16); fall back to whichever
+        // remaining tab is actually shown so a hidden tab's button is
+        // never the only thing keeping its content pane selected.
+        let initialTab = getInitialTab();
+        if (initialTab === TAB_RECENT && !this.showRecentTab) {
+            initialTab = TAB_BOOKMARKS;
+        } else if (initialTab === TAB_BOOKMARKS && !this.showBookmarksTab) {
+            initialTab = TAB_RECENT;
+        }
+
         this.state = useState({
-            activeTab: getInitialTab(),
+            activeTab: initialTab,
             bookmarks: [],
         });
 

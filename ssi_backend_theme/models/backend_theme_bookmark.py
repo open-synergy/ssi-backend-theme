@@ -24,7 +24,6 @@ class BackendThemeBookmark(models.Model):
     _order = "sequence, name"
 
     user_id = fields.Many2one(
-        string="User",
         comodel_name="res.users",
         required=True,
         default=lambda self: self.env.user,

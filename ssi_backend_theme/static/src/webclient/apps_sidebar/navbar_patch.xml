@@ -14,7 +14,7 @@
     -->
     <t t-inherit="web.NavBar" t-inherit-mode="extension">
         <xpath expr="//header[hasclass('o_navbar')]" position="before">
-            <AppsSidebar t-if="!this.ui.isSmall" />
+            <AppsSidebar t-if="!this.ui.isSmall and this.ssiShowAppsSidebar" />
         </xpath>
     </t>
 

@@ -7,6 +7,7 @@
         >
             <div class="o_ssi_sidebar_footer_tabs d-flex flex-shrink-0" role="tablist">
                 <button
+                    t-if="showRecentTab"
                     type="button"
                     class="o_ssi_sidebar_footer_tab btn btn-sm flex-fill bg-transparent border-0 rounded-0 text-truncate"
                     t-att-class="{active: isRecentTab}"
@@ -17,6 +18,7 @@
                     Recent
                 </button>
                 <button
+                    t-if="showBookmarksTab"
                     type="button"
                     class="o_ssi_sidebar_footer_tab btn btn-sm flex-fill bg-transparent border-0 rounded-0 text-truncate"
                     t-att-class="{active: isBookmarksTab}"

@@ -294,6 +294,25 @@ class BackendTheme(models.Model):
         "applied. Not yet consumed by any feature in this module; "
         "reserved for a future dark mode feature.",
     )
+    show_sidebar = fields.Boolean(
+        default=True,
+        help="Uncheck to hide the entire navigation sidebar and shift "
+        "the backend back to Odoo's default layout, with no space left "
+        "on the left side. The fields below are ignored while this is "
+        "unchecked.",
+    )
+    show_sidebar_logo = fields.Boolean(
+        default=True,
+        help="Uncheck to hide the company logo header at the top of the sidebar.",
+    )
+    show_sidebar_recent = fields.Boolean(
+        default=True,
+        help="Uncheck to hide the RECENT tab from the sidebar's footer panel.",
+    )
+    show_sidebar_bookmarks = fields.Boolean(
+        default=True,
+        help="Uncheck to hide the BOOKMARKS tab from the sidebar's footer panel.",
+    )
 
     @api.constrains(*COLOR_FIELD_NAMES)
     def _check_color_hex_format(self):
@@ -395,6 +414,15 @@ class BackendTheme(models.Model):
             "color_list_row_hover_bg": theme.color_list_row_hover_bg or False,
             "font_family": theme.font_family or DEFAULT_FONT_FAMILY,
             "sidebar_default": theme.sidebar_default or DEFAULT_SIDEBAR_STATE,
+            # Boolean fields default to `False` on an empty recordset, so
+            # unlike every field above, an `or DEFAULT` fallback would
+            # silently turn an intentional `False` on a real theme into
+            # `True`. Checking `theme` first is what actually implements
+            # "no active theme / field missing -> True" (issue #16).
+            "show_sidebar": theme.show_sidebar if theme else True,
+            "show_sidebar_logo": theme.show_sidebar_logo if theme else True,
+            "show_sidebar_recent": theme.show_sidebar_recent if theme else True,
+            "show_sidebar_bookmarks": (theme.show_sidebar_bookmarks if theme else True),
         }
 
     @api.model

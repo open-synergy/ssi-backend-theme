@@ -7,6 +7,7 @@
             t-att-class="{o_ssi_apps_sidebar_collapsed: state.collapsed}"
         >
             <a
+                t-if="showLogo"
                 href="/odoo"
                 class="o_ssi_apps_sidebar_logo d-flex align-items-center flex-shrink-0"
                 t-att-aria-label="companyName"
@@ -66,8 +67,10 @@
             </ul>
             <!-- RECENT/BOOKMARKS panel (issue #13): only while expanded;
                  fully absent from the DOM, not just visually hidden, when
-                 collapsed. -->
-            <SidebarFooter t-if="!state.collapsed" />
+                 collapsed. Also fully absent (issue #16) when the active
+                 theme has both show_sidebar_recent and
+                 show_sidebar_bookmarks turned off. -->
+            <SidebarFooter t-if="!state.collapsed and showFooter" />
         </aside>
     </t>
 

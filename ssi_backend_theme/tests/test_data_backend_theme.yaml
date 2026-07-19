@@ -134,6 +134,33 @@ scenarios:
             type: "value"
             operator: "is_falsy"
 
+  - name: "Create Backend Theme without any sidebar visibility field"
+    steps:
+      - step: "Create theme leaving all sidebar visibility fields unset"
+        action: "create"
+        model: "backend_theme"
+        save_as: "theme"
+        values:
+          name: "Full Sidebar Theme"
+          code: "THM018"
+
+      - step: "Assert every sidebar visibility field defaults to True"
+        action: "assert"
+        target: "theme"
+        asserts:
+          show_sidebar:
+            type: "value"
+            expected: true
+          show_sidebar_logo:
+            type: "value"
+            expected: true
+          show_sidebar_recent:
+            type: "value"
+            expected: true
+          show_sidebar_bookmarks:
+            type: "value"
+            expected: true
+
   - name: "Edit Backend Theme name"
     steps:
       - step: "Create theme to edit"
