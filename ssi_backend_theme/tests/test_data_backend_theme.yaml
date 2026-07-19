@@ -171,3 +171,30 @@ scenarios:
           name: "Floating Theme"
           code: "THM007"
           sidebar_default: "melayang"
+
+  - name: "Writing an invalid sidebar_default value is rejected and keeps the old value"
+    steps:
+      - step: "Create theme with a valid collapsed sidebar_default"
+        action: "create"
+        model: "backend_theme"
+        save_as: "theme"
+        values:
+          name: "Sidebar Write Theme"
+          code: "THM008"
+          sidebar_default: "collapsed"
+
+      - step: "Write a sidebar_default value outside the selection must fail"
+        action: "write"
+        target: "theme"
+        expect_error:
+          type: "ValueError"
+        values:
+          sidebar_default: "melayang"
+
+      - step: "Assert the old sidebar_default value is unchanged"
+        action: "assert"
+        target: "theme"
+        asserts:
+          sidebar_default:
+            type: "value"
+            expected: "collapsed"

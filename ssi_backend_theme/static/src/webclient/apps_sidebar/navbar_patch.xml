@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <!--
+        Desktop-only persistent apps sidebar. Rendered as a sibling of the
+        existing `<header class="o_navbar">`, guarded by the same
+        `this.ui.isSmall` check the rest of `web.NavBar` already uses for
+        its desktop-only branches (see e.g. the "App Brand" DropdownItem
+        and the "Current App Sections" block in web/static/src/webclient/
+        navbar/navbar.xml). The mobile off-canvas sidebar
+        (`web.NavBar.AppsMenu.Sidebar`, guarded by `this.ui.isSmall`) is a
+        separate template branch and is left untouched: only one of the
+        two sidebars is ever rendered.
+    -->
+    <t t-inherit="web.NavBar" t-inherit-mode="extension">
+        <xpath expr="//header[hasclass('o_navbar')]" position="before">
+            <AppsSidebar t-if="!this.ui.isSmall" />
+        </xpath>
+    </t>
+
+</templates>
