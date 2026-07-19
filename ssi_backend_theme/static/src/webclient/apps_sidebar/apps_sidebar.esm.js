@@ -2,6 +2,7 @@
 // Copyright 2026 PT. Simetri Sinergi Indonesia
 // License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import {Component, onMounted, onWillStart, onWillUnmount, useState} from "@odoo/owl";
+import {SidebarFooter} from "./sidebar_footer.esm";
 import {_t} from "@web/core/l10n/translation";
 import {browser} from "@web/core/browser/browser";
 import {session} from "@web/session";
@@ -59,6 +60,7 @@ function getInitialCollapsedState() {
 export class AppsSidebar extends Component {
     static template = "ssi_backend_theme.AppsSidebar";
     static props = {};
+    static components = {SidebarFooter};
 
     setup() {
         this.menuService = useService("menu");

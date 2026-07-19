@@ -22,6 +22,8 @@
         "security/ir_module_category/backend_theme.xml",
         "security/res_groups/backend_theme.xml",
         "security/ir_model_access/backend_theme.xml",
+        "security/ir_model_access/backend_theme_bookmark.xml",
+        "security/ir_rule/backend_theme_bookmark.xml",
         "ir_sequence/backend_theme.xml",
         "sequence_template/backend_theme.xml",
         "menu.xml",

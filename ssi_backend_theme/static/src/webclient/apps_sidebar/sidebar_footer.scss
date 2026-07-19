@@ -1,0 +1,71 @@
+// Copyright 2026 OpenSynergy Indonesia
+// Copyright 2026 PT. Simetri Sinergi Indonesia
+// License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
+// Footer panel (issue #13): fills whatever vertical space is left below
+// the apps list (`.o_ssi_apps_sidebar_apps` is `flex-shrink-0`, so it
+// never grows) inside the same `flex-column` `<aside>`. Only ever
+// rendered while the sidebar is expanded -- see the `t-if` guard on
+// `<SidebarFooter/>` in apps_sidebar.xml -- so no collapsed-state rule is
+// needed here at all.
+.o_ssi_sidebar_footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.o_ssi_sidebar_footer_tab {
+    color: inherit;
+    opacity: 0.75;
+
+    &:hover {
+        opacity: 1;
+        background-color: $o-navbar-entry-bg--hover;
+    }
+
+    &.active {
+        opacity: 1;
+        font-weight: bold;
+        box-shadow: inset 0 -2px 0 currentColor;
+    }
+}
+
+.o_ssi_sidebar_footer_body {
+    padding: 0.25rem 0;
+}
+
+.o_ssi_sidebar_footer_empty {
+    padding: 0.5rem 0.75rem;
+}
+
+.o_ssi_sidebar_footer_bookmark_actions {
+    color: inherit;
+    opacity: 0.85;
+
+    button {
+        color: inherit;
+    }
+}
+
+.o_ssi_sidebar_footer_list {
+    > li {
+        > a {
+            color: inherit;
+            text-decoration: none;
+            padding: 0.35rem 0.75rem;
+
+            &:hover {
+                background-color: $o-navbar-entry-bg--hover;
+                color: inherit;
+            }
+        }
+
+        .o_ssi_sidebar_footer_bookmark_remove {
+            color: inherit;
+            opacity: 0.6;
+            margin-right: 0.25rem;
+
+            &:hover {
+                opacity: 1;
+            }
+        }
+    }
+}
