@@ -121,3 +121,70 @@ class TestBackendThemeScssAsset(YamlTransactionCase):
 
         content = self._get_generated_scss()
         self.assertIn(f"$o-brand-primary: {DEFAULT_COLOR_PRIMARY} !default;", content)
+
+    def test_write_non_active_theme_does_not_resync(self):
+        active_theme = self.env["backend_theme"].create(
+            {"name": "Still Active", "code": "SCSS006", "color_primary": "#eeeeee"}
+        )
+        other_theme = self.env["backend_theme"].create(
+            {"name": "Not Active", "code": "SCSS007", "color_primary": "#000000"}
+        )
+        self._set_active_theme_param(active_theme.id)
+        self.env["backend_theme"]._sync_active_theme_scss_asset()
+
+        other_theme.write({"color_primary": "#123123"})
+
+        content = self._get_generated_scss()
+        self.assertIn("$o-brand-primary: #eeeeee !default;", content)
+        self.assertNotIn("#123123", content)
+
+    def test_write_color_without_any_active_theme_does_not_error(self):
+        theme = self.env["backend_theme"].create(
+            {"name": "No Active Theme Yet", "code": "SCSS008"}
+        )
+        self._set_active_theme_param(None)
+
+        theme.write({"color_primary": "#456456"})
+
+        # No active-theme pointer at all: write() must not raise, and
+        # must not fabricate a SCSS override attachment.
+        attachments = (
+            self.env["ir.attachment"]
+            .sudo()
+            .search([("url", "=", SCSS_ASSET_CUSTOM_URL)])
+        )
+        self.assertFalse(attachments)
+
+    def test_unlink_non_active_theme_does_not_resync(self):
+        active_theme = self.env["backend_theme"].create(
+            {"name": "Kept Active", "code": "SCSS009", "color_primary": "#777777"}
+        )
+        other_theme = self.env["backend_theme"].create(
+            {"name": "To Be Deleted", "code": "SCSS010"}
+        )
+        self._set_active_theme_param(active_theme.id)
+        self.env["backend_theme"]._sync_active_theme_scss_asset()
+
+        other_theme.unlink()
+
+        content = self._get_generated_scss()
+        self.assertIn("$o-brand-primary: #777777 !default;", content)
+
+    def test_active_theme_ignores_non_numeric_parameter(self):
+        theme = self.env["backend_theme"].create(
+            {
+                "name": "Garbage Param Theme",
+                "code": "SCSS011",
+                "color_primary": "#999999",
+            }
+        )
+        self.env["ir.config_parameter"].sudo().set_param(
+            CONFIG_PARAM_ACTIVE_THEME_ID, "not-a-number"
+        )
+
+        resolved = self.env["backend_theme"]._get_active_theme()
+        self.assertFalse(resolved)
+
+        # write() on `theme` must not blow up trying to int() the
+        # garbage parameter value either.
+        theme.write({"color_primary": "#888888"})
