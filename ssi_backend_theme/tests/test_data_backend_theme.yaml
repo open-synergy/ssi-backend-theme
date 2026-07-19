@@ -300,6 +300,188 @@ scenarios:
             type: "value"
             expected: "#dc3545"
 
+  - name: "Create Backend Theme with a valid navbar_height"
+    steps:
+      - step: "Create theme with navbar_height in px"
+        action: "create"
+        model: "backend_theme"
+        save_as: "theme"
+        values:
+          name: "Tall Navbar Theme"
+          code: "THM012"
+          navbar_height: "56px"
+
+      - step: "Assert navbar_height stored as-is"
+        action: "assert"
+        target: "theme"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          navbar_height:
+            type: "value"
+            expected: "56px"
+
+  - name: "Create Backend Theme with all navbar/spacing fields"
+    steps:
+      - step: "Create theme with every navbar/spacing field filled"
+        action: "create"
+        model: "backend_theme"
+        save_as: "theme"
+        values:
+          name: "Roomy Navbar Theme"
+          code: "THM013"
+          navbar_height: "56px"
+          navbar_font_size: "1.2rem"
+          navbar_entry_padding_h: "1em"
+          navbar_entry_margin_h: "4px"
+          navbar_entry_border_radius: "4px"
+          paragraph_spacing: "1.5rem"
+          form_spacing: "8px"
+
+      - step: "Assert every navbar/spacing field stored as-is"
+        action: "assert"
+        target: "theme"
+        asserts:
+          navbar_height:
+            type: "value"
+            expected: "56px"
+          navbar_font_size:
+            type: "value"
+            expected: "1.2rem"
+          navbar_entry_padding_h:
+            type: "value"
+            expected: "1em"
+          navbar_entry_margin_h:
+            type: "value"
+            expected: "4px"
+          navbar_entry_border_radius:
+            type: "value"
+            expected: "4px"
+          paragraph_spacing:
+            type: "value"
+            expected: "1.5rem"
+          form_spacing:
+            type: "value"
+            expected: "8px"
+
+  - name: "Create Backend Theme without any navbar/spacing field"
+    steps:
+      - step: "Create theme leaving all navbar/spacing fields empty"
+        action: "create"
+        model: "backend_theme"
+        save_as: "theme"
+        values:
+          name: "No Navbar Setting Theme"
+          code: "THM014"
+
+      - step: "Assert every navbar/spacing field is empty"
+        action: "assert"
+        target: "theme"
+        asserts:
+          navbar_height:
+            type: "value"
+            operator: "is_falsy"
+          navbar_font_size:
+            type: "value"
+            operator: "is_falsy"
+          navbar_entry_padding_h:
+            type: "value"
+            operator: "is_falsy"
+          navbar_entry_margin_h:
+            type: "value"
+            operator: "is_falsy"
+          navbar_entry_border_radius:
+            type: "value"
+            operator: "is_falsy"
+          paragraph_spacing:
+            type: "value"
+            operator: "is_falsy"
+          form_spacing:
+            type: "value"
+            operator: "is_falsy"
+
+  - name: "Writing a unitless navbar_height value is rejected and keeps the old value"
+    steps:
+      - step: "Create theme with a valid navbar_height"
+        action: "create"
+        model: "backend_theme"
+        save_as: "theme"
+        values:
+          name: "Navbar Height Write Theme"
+          code: "THM015"
+          navbar_height: "56px"
+
+      - step: "Write a unitless navbar_height value must fail"
+        action: "write"
+        target: "theme"
+        expect_error:
+          type: "ValidationError"
+        values:
+          navbar_height: "56"
+
+      - step: "Assert the old navbar_height value is unchanged"
+        action: "assert"
+        target: "theme"
+        asserts:
+          navbar_height:
+            type: "value"
+            expected: "56px"
+
+  - name: "Writing a non-numeric navbar_font_size value is rejected"
+    steps:
+      - step: "Create theme with a valid navbar_font_size"
+        action: "create"
+        model: "backend_theme"
+        save_as: "theme"
+        values:
+          name: "Navbar Font Size Write Theme"
+          code: "THM016"
+          navbar_font_size: "1rem"
+
+      - step: "Write a non-numeric navbar_font_size value must fail"
+        action: "write"
+        target: "theme"
+        expect_error:
+          type: "ValidationError"
+        values:
+          navbar_font_size: "besar"
+
+      - step: "Assert the old navbar_font_size value is unchanged"
+        action: "assert"
+        target: "theme"
+        asserts:
+          navbar_font_size:
+            type: "value"
+            expected: "1rem"
+
+  - name: "Writing a hex color value into navbar_height is rejected"
+    steps:
+      - step: "Create theme with a valid navbar_height"
+        action: "create"
+        model: "backend_theme"
+        save_as: "theme"
+        values:
+          name: "Navbar Height Not A Color Theme"
+          code: "THM017"
+          navbar_height: "46px"
+
+      - step: "Write a hex color value into navbar_height must fail"
+        action: "write"
+        target: "theme"
+        expect_error:
+          type: "ValidationError"
+        values:
+          navbar_height: "#ffffff"
+
+      - step: "Assert the old navbar_height value is unchanged"
+        action: "assert"
+        target: "theme"
+        asserts:
+          navbar_height:
+            type: "value"
+            expected: "46px"
+
   - name: "Writing a wrong-length color_list_header_bg value is rejected"
     steps:
       - step: "Create theme with a valid color_list_header_bg"
