@@ -108,9 +108,7 @@ class TestBackendThemeScssAsset(YamlTransactionCase):
         theme.write({"active": False})
 
         content = self._get_generated_scss()
-        self.assertIn(
-            f"$o-brand-primary: {DEFAULT_COLOR_PRIMARY} !default;", content
-        )
+        self.assertIn(f"$o-brand-primary: {DEFAULT_COLOR_PRIMARY} !default;", content)
 
     def test_deleting_active_theme_resyncs_to_default(self):
         theme = self.env["backend_theme"].create(
@@ -122,6 +120,4 @@ class TestBackendThemeScssAsset(YamlTransactionCase):
         theme.unlink()
 
         content = self._get_generated_scss()
-        self.assertIn(
-            f"$o-brand-primary: {DEFAULT_COLOR_PRIMARY} !default;", content
-        )
+        self.assertIn(f"$o-brand-primary: {DEFAULT_COLOR_PRIMARY} !default;", content)
