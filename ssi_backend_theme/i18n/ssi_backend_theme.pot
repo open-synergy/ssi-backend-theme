@@ -103,6 +103,12 @@ msgid "Code"
 msgstr ""
 
 #. module: ssi_backend_theme
+#. odoo-javascript
+#: code:addons/ssi_backend_theme/static/src/webclient/apps_sidebar/apps_sidebar.esm.js:0
+msgid "Collapse sidebar"
+msgstr ""
+
+#. module: ssi_backend_theme
 #: model:ir.model.fields.selection,name:ssi_backend_theme.selection__backend_theme__sidebar_default__collapsed
 msgid "Collapsed"
 msgstr ""
@@ -174,6 +180,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_ir_http__display_name
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_res_config_settings__display_name
 msgid "Display Name"
+msgstr ""
+
+#. module: ssi_backend_theme
+#. odoo-javascript
+#: code:addons/ssi_backend_theme/static/src/webclient/apps_sidebar/apps_sidebar.esm.js:0
+msgid "Expand sidebar"
 msgstr ""
 
 #. module: ssi_backend_theme
