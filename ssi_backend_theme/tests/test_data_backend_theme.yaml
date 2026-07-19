@@ -33,6 +33,56 @@ scenarios:
             type: "value"
             expected: "light"
 
+  - name: "Create Backend Theme with all extended color fields"
+    steps:
+      - step: "Create theme with text, background, status, and list view colors"
+        action: "create"
+        model: "backend_theme"
+        save_as: "theme"
+        values:
+          name: "Full Palette Theme"
+          code: "THM009"
+          color_text_body: "#111111"
+          color_view_background: "#eeeeee"
+          color_success: "#0a8a3c"
+          color_info: "#0a6a9a"
+          color_warning: "#c98b02"
+          color_danger: "#b52a37"
+          color_list_header_bg: "#dcdcdc"
+          color_list_row_hover_bg: "#f5f5f5"
+
+      - step: "Assert every extended color field stored as-is"
+        action: "assert"
+        target: "theme"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          color_text_body:
+            type: "value"
+            expected: "#111111"
+          color_view_background:
+            type: "value"
+            expected: "#eeeeee"
+          color_success:
+            type: "value"
+            expected: "#0a8a3c"
+          color_info:
+            type: "value"
+            expected: "#0a6a9a"
+          color_warning:
+            type: "value"
+            expected: "#c98b02"
+          color_danger:
+            type: "value"
+            expected: "#b52a37"
+          color_list_header_bg:
+            type: "value"
+            expected: "#dcdcdc"
+          color_list_row_hover_bg:
+            type: "value"
+            expected: "#f5f5f5"
+
   - name: "Create Backend Theme without any color field"
     steps:
       - step: "Create theme leaving all color fields empty"
@@ -57,6 +107,30 @@ scenarios:
             type: "value"
             operator: "is_falsy"
           color_navbar_text:
+            type: "value"
+            operator: "is_falsy"
+          color_text_body:
+            type: "value"
+            operator: "is_falsy"
+          color_view_background:
+            type: "value"
+            operator: "is_falsy"
+          color_success:
+            type: "value"
+            operator: "is_falsy"
+          color_info:
+            type: "value"
+            operator: "is_falsy"
+          color_warning:
+            type: "value"
+            operator: "is_falsy"
+          color_danger:
+            type: "value"
+            operator: "is_falsy"
+          color_list_header_bg:
+            type: "value"
+            operator: "is_falsy"
+          color_list_row_hover_bg:
             type: "value"
             operator: "is_falsy"
 
@@ -198,3 +272,57 @@ scenarios:
           sidebar_default:
             type: "value"
             expected: "collapsed"
+
+  - name: "Writing an invalid color_danger value is rejected and keeps the old value"
+    steps:
+      - step: "Create theme with a valid color_danger"
+        action: "create"
+        model: "backend_theme"
+        save_as: "theme"
+        values:
+          name: "Danger Write Theme"
+          code: "THM010"
+          color_danger: "#dc3545"
+
+      - step: "Write a non-hex color_danger value must fail"
+        action: "write"
+        target: "theme"
+        expect_error:
+          type: "ValidationError"
+        values:
+          color_danger: "merah"
+
+      - step: "Assert the old color_danger value is unchanged"
+        action: "assert"
+        target: "theme"
+        asserts:
+          color_danger:
+            type: "value"
+            expected: "#dc3545"
+
+  - name: "Writing a wrong-length color_list_header_bg value is rejected"
+    steps:
+      - step: "Create theme with a valid color_list_header_bg"
+        action: "create"
+        model: "backend_theme"
+        save_as: "theme"
+        values:
+          name: "List Header Write Theme"
+          code: "THM011"
+          color_list_header_bg: "#f8f9fa"
+
+      - step: "Write a wrong-length color_list_header_bg value must fail"
+        action: "write"
+        target: "theme"
+        expect_error:
+          type: "ValidationError"
+        values:
+          color_list_header_bg: "#12345"
+
+      - step: "Assert the old color_list_header_bg value is unchanged"
+        action: "assert"
+        target: "theme"
+        asserts:
+          color_list_header_bg:
+            type: "value"
+            expected: "#f8f9fa"

@@ -67,6 +67,18 @@
                             <field name="color_primary" />
                             <field name="color_navbar_bg" />
                             <field name="color_navbar_text" />
+                            <field name="color_text_body" />
+                            <field name="color_view_background" />
+                        </group>
+                        <group name="colors_group_2" string="Status Colors">
+                            <field name="color_success" />
+                            <field name="color_info" />
+                            <field name="color_warning" />
+                            <field name="color_danger" />
+                        </group>
+                        <group name="colors_group_3" string="List View Colors">
+                            <field name="color_list_header_bg" />
+                            <field name="color_list_row_hover_bg" />
                         </group>
                     </page>
                     <page name="typography" string="Typography">
