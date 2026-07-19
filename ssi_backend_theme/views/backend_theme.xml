@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="backend_theme_view_search" model="ir.ui.view">
+        <field name="name">backend_theme - search</field>
+        <field name="model">backend_theme</field>
+        <field
+            name="inherit_id"
+            ref="ssi_master_data_mixin.mixin_master_data_view_search"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//group[@name='dom_active']" position="after">
+                    <group>
+                        <filter
+                            name="grp_sidebar_default"
+                            string="Default Sidebar State"
+                            context="{'group_by':'sidebar_default'}"
+                        />
+                        <filter
+                            name="grp_color_scheme_default"
+                            string="Default Color Scheme"
+                            context="{'group_by':'color_scheme_default'}"
+                        />
+                    </group>
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="backend_theme_view_list" model="ir.ui.view">
+        <field name="name">backend_theme - list</field>
+        <field name="model">backend_theme</field>
+        <field
+            name="inherit_id"
+            ref="ssi_master_data_mixin.mixin_master_data_view_tree"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="color_primary" optional="show" />
+                    <field name="font_family" optional="hide" />
+                    <field name="sidebar_default" optional="hide" />
+                    <field name="color_scheme_default" optional="hide" />
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="backend_theme_view_form" model="ir.ui.view">
+        <field name="name">backend_theme - form</field>
+        <field name="model">backend_theme</field>
+        <field
+            name="inherit_id"
+            ref="ssi_master_data_mixin.mixin_master_data_view_form"
+        />
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//notebook/page[@name='note']" position="before">
+                    <page name="colors" string="Colors">
+                        <group name="colors_group_1" string="Brand Colors">
+                            <field name="color_primary" />
+                            <field name="color_navbar_bg" />
+                            <field name="color_navbar_text" />
+                        </group>
+                    </page>
+                    <page name="typography" string="Typography">
+                        <group name="typography_group_1" string="Font">
+                            <field name="font_family" />
+                            <field name="font_size_base" />
+                        </group>
+                    </page>
+                    <page name="defaults" string="Defaults">
+                        <group name="defaults_group_1" string="Layout Defaults">
+                            <field name="sidebar_default" />
+                            <field name="color_scheme_default" />
+                        </group>
+                    </page>
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="backend_theme_action" model="ir.actions.act_window">
+        <field name="name">Backend Theme</field>
+        <field name="res_model">backend_theme</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem
+        id="menu_backend_theme"
+        action="backend_theme_action"
+        parent="menu_backend_theme_root"
+    />
+</odoo>

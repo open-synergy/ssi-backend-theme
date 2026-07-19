@@ -1,0 +1,173 @@
+scenarios:
+  - name: "Create Backend Theme with primary color"
+    steps:
+      - step: "Create theme with a valid primary color"
+        action: "create"
+        model: "backend_theme"
+        save_as: "theme"
+        values:
+          name: "Ocean Blue"
+          code: "THM001"
+          color_primary: "#1A73E8"
+
+      - step: "Assert theme created with expected defaults"
+        action: "assert"
+        target: "theme"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          name:
+            type: "value"
+            expected: "Ocean Blue"
+          color_primary:
+            type: "value"
+            expected: "#1A73E8"
+          active:
+            type: "value"
+            expected: true
+          sidebar_default:
+            type: "value"
+            expected: "expanded"
+          color_scheme_default:
+            type: "value"
+            expected: "light"
+
+  - name: "Create Backend Theme without any color field"
+    steps:
+      - step: "Create theme leaving all color fields empty"
+        action: "create"
+        model: "backend_theme"
+        save_as: "theme"
+        values:
+          name: "No Color Theme"
+          code: "THM002"
+
+      - step: "Assert theme created and color fields empty"
+        action: "assert"
+        target: "theme"
+        asserts:
+          id:
+            type: "value"
+            operator: "is_truthy"
+          color_primary:
+            type: "value"
+            operator: "is_falsy"
+          color_navbar_bg:
+            type: "value"
+            operator: "is_falsy"
+          color_navbar_text:
+            type: "value"
+            operator: "is_falsy"
+
+  - name: "Edit Backend Theme name"
+    steps:
+      - step: "Create theme to edit"
+        action: "create"
+        model: "backend_theme"
+        save_as: "theme"
+        values:
+          name: "Draft Name"
+          code: "THM003"
+
+      - step: "Write new name"
+        action: "write"
+        target: "theme"
+        values:
+          name: "Final Name"
+
+      - step: "Assert name updated"
+        action: "assert"
+        target: "theme"
+        asserts:
+          name:
+            type: "value"
+            expected: "Final Name"
+
+  - name: "Delete Backend Theme"
+    steps:
+      - step: "Create theme to be deleted"
+        action: "create"
+        model: "backend_theme"
+        save_as: "theme"
+        values:
+          name: "To Be Deleted"
+          code: "THM004"
+
+      - step: "Delete the theme"
+        action: "unlink"
+        target: "theme"
+
+      - step: "Verify the theme is gone"
+        action: "search"
+        model: "backend_theme"
+        domain: [["code", "=", "THM004"]]
+        save_as: "result"
+        expect_count: 0
+
+  - name: "Generate Code from Sequence Template"
+    steps:
+      - step: "Create theme with placeholder code"
+        action: "create"
+        model: "backend_theme"
+        save_as: "theme"
+        values:
+          name: "Auto Code Theme"
+          code: "/"
+
+      - step: "Call Generate Code button"
+        action: "call"
+        target: "theme"
+        method: "action_generate_code"
+
+      - step: "Assert code generated from the sequence template"
+        action: "assert"
+        target: "theme"
+        asserts:
+          code:
+            type: "value"
+            operator: "not_equals"
+            expected: "/"
+
+  - name: "Invalid hex color value is rejected"
+    steps:
+      - step: "Create theme with an invalid color value"
+        action: "create"
+        model: "backend_theme"
+        expect_error:
+          type: "ValidationError"
+        values:
+          name: "Broken Theme"
+          code: "THM005"
+          color_primary: "bukan-warna"
+
+  - name: "Duplicate code is rejected"
+    steps:
+      - step: "Create first theme"
+        action: "create"
+        model: "backend_theme"
+        save_as: "first"
+        values:
+          name: "First Theme"
+          code: "THM006"
+
+      - step: "Create second theme with the same code must fail"
+        action: "create"
+        model: "backend_theme"
+        expect_error:
+          type: "UserError"
+        values:
+          name: "Second Theme"
+          code: "THM006"
+
+  - name: "Invalid sidebar_default value is rejected"
+    steps:
+      - step: "Create theme with a sidebar_default outside the selection"
+        action: "create"
+        model: "backend_theme"
+        expect_error:
+          type: "ValueError"
+        values:
+          name: "Floating Theme"
+          code: "THM007"
+          sidebar_default: "melayang"
