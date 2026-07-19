@@ -20,10 +20,26 @@ $o-ssi-apps-sidebar-width-collapsed: 52px !default;
 // directly in apps_sidebar.xml) is the same class core's own mobile
 // off-canvas sidebar uses for the equivalent "active app" highlight (see
 // `web.NavBar.AppsMenu.Sidebar` in web/static/src/webclient/navbar/navbar.xml).
+// Exposed as real custom properties (not just var()-with-fallback) so JS
+// (apps_sidebar.esm.js) can point `--o-ssi-apps-sidebar-current-width` at
+// whichever of the two applies for the current collapsed state.
+:root {
+    --o-ssi-apps-sidebar-width: #{$o-ssi-apps-sidebar-width};
+    --o-ssi-apps-sidebar-width-collapsed: #{$o-ssi-apps-sidebar-width-collapsed};
+}
+
 .o_ssi_apps_sidebar {
-    width: var(--o-ssi-apps-sidebar-width, #{$o-ssi-apps-sidebar-width});
-    min-width: var(--o-ssi-apps-sidebar-width, #{$o-ssi-apps-sidebar-width});
-    height: calc(100vh - var(--o-navbar-height, #{$o-navbar-height}));
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    // Above the (non-positioned) navbar and the rest of the static content
+    // flow, so the sidebar's top edge lines up with the viewport's top
+    // edge — but still below Bootstrap's $zindex-dropdown (1000), so navbar
+    // dropdowns (Apps menu, user menu, ...) keep rendering on top of it.
+    z-index: 1;
+    width: var(--o-ssi-apps-sidebar-width);
+    min-width: var(--o-ssi-apps-sidebar-width);
     background: $o-navbar-background;
     color: var(--NavBar-entry-color, #{$o-navbar-entry-color});
     transition:
@@ -32,19 +48,30 @@ $o-ssi-apps-sidebar-width-collapsed: 52px !default;
     overflow: hidden;
 
     &.o_ssi_apps_sidebar_collapsed {
-        width: var(
-            --o-ssi-apps-sidebar-width-collapsed,
-            #{$o-ssi-apps-sidebar-width-collapsed}
-        );
-        min-width: var(
-            --o-ssi-apps-sidebar-width-collapsed,
-            #{$o-ssi-apps-sidebar-width-collapsed}
-        );
+        width: var(--o-ssi-apps-sidebar-width-collapsed);
+        min-width: var(--o-ssi-apps-sidebar-width-collapsed);
 
         .o_ssi_apps_sidebar_app_name {
             display: none;
         }
     }
+}
+
+// Shifts the navbar and the content area together. `.o_web_client` is
+// `<body>` (`body_classname` in web/views/webclient_templates.xml); a
+// single `padding-left` on it moves both `.o_main_navbar` and
+// `.o_action_manager` at once. Core targets `.o_action_manager` with a
+// direct-child selector (`.o_web_client > .o_action_manager`) for
+// `flex: 1 1 auto; height: 100%`, so it must never be wrapped in a new
+// element here. The value tracks the same custom property `AppsSidebar`
+// (apps_sidebar.esm.js) writes to `document.documentElement` on mount and
+// on every collapse toggle; that property is only ever set while the
+// sidebar is actually rendered (desktop, `!ui.isSmall`), so on small
+// viewports — where the sidebar isn't rendered at all — this falls back
+// to 0 and leaves no empty gap.
+.o_web_client {
+    padding-left: var(--o-ssi-apps-sidebar-current-width, 0);
+    transition: padding-left 0.2s ease-in-out;
 }
 
 .o_ssi_apps_sidebar_toggle {
@@ -73,17 +100,4 @@ $o-ssi-apps-sidebar-width-collapsed: 52px !default;
     width: 1.5em;
     margin-right: 0.5rem;
     flex-shrink: 0;
-}
-
-.o_ssi_apps_sidebar_sections {
-    font-size: 0.9em;
-
-    .o_ssi_apps_sidebar_section {
-        padding: 0.35rem 1rem;
-        cursor: pointer;
-
-        &:hover {
-            background-color: $o-navbar-entry-bg--hover;
-        }
-    }
 }

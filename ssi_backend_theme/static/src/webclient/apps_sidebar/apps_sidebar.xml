@@ -51,22 +51,6 @@
                     </li>
                 </t>
             </ul>
-            <t t-if="!state.collapsed and currentAppSections.length">
-                <hr class="my-1 flex-shrink-0" />
-                <ul
-                    class="o_ssi_apps_sidebar_sections list-unstyled flex-grow-1 overflow-auto mb-0"
-                >
-                    <t t-foreach="currentAppSections" t-as="section" t-key="section.id">
-                        <li
-                            class="o_ssi_apps_sidebar_section text-truncate"
-                            t-att-data-menu-xmlid="section.xmlid"
-                            t-on-click="() => this.onSectionClick(section)"
-                        >
-                            <t t-esc="section.name" />
-                        </li>
-                    </t>
-                </ul>
-            </t>
         </aside>
     </t>
 
