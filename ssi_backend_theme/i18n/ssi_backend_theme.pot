@@ -218,6 +218,14 @@ msgid ""
 msgstr ""
 
 #. module: ssi_backend_theme
+#: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme__enable_form_sheet_resize
+msgid ""
+"Check to let a form view's sheet grow past Odoo's own default maximum width,"
+" using all the room its outer container already allows. Ignored on small "
+"screens, where the sheet already spans the available width on its own."
+msgstr ""
+
+#. module: ssi_backend_theme
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__code
 msgid "Code"
 msgstr ""
@@ -320,6 +328,11 @@ msgid "Display Name"
 msgstr ""
 
 #. module: ssi_backend_theme
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__enable_form_sheet_resize
+msgid "Enable Form Sheet Resize"
+msgstr ""
+
+#. module: ssi_backend_theme
 #. odoo-javascript
 #: code:addons/ssi_backend_theme/static/src/webclient/apps_sidebar/apps_sidebar.esm.js:0
 msgid "Expand sidebar"
@@ -358,6 +371,11 @@ msgstr ""
 #. module: ssi_backend_theme
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__form_spacing
 msgid "Form Spacing"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model_terms:ir.ui.view,arch_db:ssi_backend_theme.backend_theme_view_form
+msgid "Form View"
 msgstr ""
 
 #. module: ssi_backend_theme
