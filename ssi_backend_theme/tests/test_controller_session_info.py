@@ -7,6 +7,7 @@ from odoo.tests import HttpCase, tagged
 from ..models.backend_theme import (
     CONFIG_PARAM_ACTIVE_THEME_ID,
     DEFAULT_APP_SUBMENU_POSITION,
+    DEFAULT_CHATTER_POSITION,
     DEFAULT_COLOR_NAVBAR_BG,
     DEFAULT_COLOR_NAVBAR_TEXT,
     DEFAULT_COLOR_PRIMARY,
@@ -82,6 +83,11 @@ class TestControllerSessionInfo(HttpCase):
             backend_theme["app_submenu_position"], DEFAULT_APP_SUBMENU_POSITION
         )
         self.assertEqual(DEFAULT_APP_SUBMENU_POSITION, "navbar")
+        # Issue #19: no active theme -> chatter_position is "auto" and
+        # show_chatter_toggle is False.
+        self.assertEqual(backend_theme["chatter_position"], DEFAULT_CHATTER_POSITION)
+        self.assertEqual(DEFAULT_CHATTER_POSITION, "auto")
+        self.assertFalse(backend_theme["show_chatter_toggle"])
 
     def test_session_info_active_theme_sidebar_hidden(self):
         theme = self.env["backend_theme"].create(
@@ -191,6 +197,34 @@ class TestControllerSessionInfo(HttpCase):
         # existing deployment's sidebar.
         self.assertFalse(backend_theme["group_apps_by_category"])
         self.assertEqual(backend_theme["app_categories"], {})
+
+    def test_session_info_active_theme_chatter_position_bottom(self):
+        theme = self.env["backend_theme"].create(
+            {
+                "name": "Bottom Chatter Theme",
+                "code": "IRH010",
+                "chatter_position": "bottom",
+            }
+        )
+        self._set_active_theme_param(theme.id)
+
+        backend_theme = self._get_backend_theme_session_info()
+
+        self.assertEqual(backend_theme["chatter_position"], "bottom")
+
+    def test_session_info_active_theme_chatter_toggle_enabled(self):
+        theme = self.env["backend_theme"].create(
+            {
+                "name": "Chatter Toggle Theme",
+                "code": "IRH011",
+                "show_chatter_toggle": True,
+            }
+        )
+        self._set_active_theme_param(theme.id)
+
+        backend_theme = self._get_backend_theme_session_info()
+
+        self.assertTrue(backend_theme["show_chatter_toggle"])
 
     def test_session_info_deleted_theme_uses_defaults(self):
         theme = self.env["backend_theme"].create(

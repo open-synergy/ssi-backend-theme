@@ -115,6 +115,10 @@
                             <field name="show_sidebar_bookmarks" />
                             <field name="group_apps_by_category" />
                         </group>
+                        <group name="defaults_group_3" string="Chatter">
+                            <field name="chatter_position" />
+                            <field name="show_chatter_toggle" />
+                        </group>
                     </page>
                 </xpath>
             </data>
