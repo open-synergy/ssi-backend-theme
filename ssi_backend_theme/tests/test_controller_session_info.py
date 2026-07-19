@@ -65,12 +65,8 @@ class TestControllerSessionInfo(HttpCase):
 
         self.assertFalse(backend_theme["id"])
         self.assertEqual(backend_theme["color_primary"], DEFAULT_COLOR_PRIMARY)
-        self.assertEqual(
-            backend_theme["color_navbar_bg"], DEFAULT_COLOR_NAVBAR_BG
-        )
-        self.assertEqual(
-            backend_theme["color_navbar_text"], DEFAULT_COLOR_NAVBAR_TEXT
-        )
+        self.assertEqual(backend_theme["color_navbar_bg"], DEFAULT_COLOR_NAVBAR_BG)
+        self.assertEqual(backend_theme["color_navbar_text"], DEFAULT_COLOR_NAVBAR_TEXT)
         self.assertEqual(backend_theme["font_family"], DEFAULT_FONT_FAMILY)
 
     def test_session_info_deleted_theme_uses_defaults(self):

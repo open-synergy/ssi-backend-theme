@@ -39,4 +39,10 @@ class ResConfigSettings(models.TransientModel):
             CONFIG_PARAM_ACTIVE_THEME_ID,
             self.backend_theme_active_id.id or "",
         )
+        # $o-brand-odoo/$o-brand-primary cannot be applied through the
+        # live CSS-custom-property mechanism (see the comment above
+        # `SCSS_ASSET_BUNDLE` in models/backend_theme.py) — they are
+        # baked into a recompiled asset instead, regenerated here since
+        # picking an active theme is an infrequent, admin-only action.
+        self.env["backend_theme"]._sync_active_theme_scss_asset()
         return result

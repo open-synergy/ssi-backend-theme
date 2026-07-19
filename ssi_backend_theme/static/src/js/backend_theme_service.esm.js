@@ -2,13 +2,15 @@ import {registry} from "@web/core/registry";
 import {session} from "@web/session";
 
 // Maps a `backend_theme` session_info key to the CSS custom property
-// it feeds. `color_primary` / `font_family` are consumed by the SCSS
-// bridge files in static/src/scss (var(--ssi-*, ...) fallbacks on
-// $o-brand-primary / $font-family-sans-serif); `color_navbar_bg` feeds
-// $o-brand-odoo the same way.
+// it feeds. `font_family` is consumed by the SCSS bridge file in
+// static/src/scss (var(--ssi-font-family, ...) fallback on
+// $font-family-sans-serif). `color_primary`/`color_navbar_bg` are
+// NOT applied here — Odoo core/Bootstrap 5 feed those two through Sass
+// color functions (darken()/tint-color()/shade-color()), which reject a
+// `var()` reference outright, so they are instead baked into a
+// recompiled asset by `backend_theme._sync_active_theme_scss_asset()`
+// (models/backend_theme.py) whenever the active theme changes.
 const CSS_VARIABLE_BY_THEME_KEY = {
-    color_primary: "--ssi-color-primary",
-    color_navbar_bg: "--ssi-color-navbar-bg",
     font_family: "--ssi-font-family",
 };
 

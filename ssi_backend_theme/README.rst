@@ -15,10 +15,13 @@ navbar text), typography (font family, base font size), and defaults for
 sidebar state and color scheme.
 
 An administrator can designate one theme preset as the active backend theme
-from *Settings*. Once selected, its colors and font are applied to the
-backend UI as CSS custom properties after the browser reloads. If no theme
-is active, or the active one is deleted or archived, the backend falls back
-to the default look.
+from *Settings*. Once selected, its font is applied live as a CSS custom
+property after the browser reloads. Its primary and navbar background
+colors take effect after the backend assets are recompiled (which happens
+automatically as part of picking the active theme) since Odoo/Bootstrap
+compute several derived shades from them at asset-compile time. If no
+theme is active, or the active one is deleted or archived, the backend
+falls back to the default look.
 
 
 Installation
