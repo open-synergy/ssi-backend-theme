@@ -17,7 +17,11 @@ Backend UI theme modules for SSI
 
 [//]: # (addons)
 
-This part will be replaced when running the oca-gen-addons-table script from OCA/maintainer-tools.
+Available addons
+----------------
+addon | version | maintainers | summary
+--- | --- | --- | ---
+[ssi_backend_theme](ssi_backend_theme/) | 19.0.1.0.0 |  | Backend Theme
 
 [//]: # (end addons)
 
