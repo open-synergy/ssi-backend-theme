@@ -30,6 +30,11 @@ DEFAULT_COLOR_PRIMARY = "#71639e"
 DEFAULT_COLOR_NAVBAR_BG = "#71639e"
 DEFAULT_COLOR_NAVBAR_TEXT = "#ffffff"
 DEFAULT_FONT_FAMILY = "sans-serif"
+# Matches the `sidebar_default` field's own default ("expanded"), applied
+# whenever there is no active theme. Any value that is not exactly
+# "collapsed" (this default included) is treated as "expanded" by the
+# browser-side sidebar component as well — never an error client-side.
+DEFAULT_SIDEBAR_STATE = "expanded"
 
 # $o-brand-odoo/$o-brand-primary cannot be bridged through a CSS custom
 # property like the rest of the active theme's values: Odoo core and
@@ -183,6 +188,7 @@ class BackendTheme(models.Model):
             "color_navbar_bg": theme.color_navbar_bg or DEFAULT_COLOR_NAVBAR_BG,
             "color_navbar_text": theme.color_navbar_text or DEFAULT_COLOR_NAVBAR_TEXT,
             "font_family": theme.font_family or DEFAULT_FONT_FAMILY,
+            "sidebar_default": theme.sidebar_default or DEFAULT_SIDEBAR_STATE,
         }
 
     @api.model

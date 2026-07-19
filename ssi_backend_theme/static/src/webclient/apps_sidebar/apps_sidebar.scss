@@ -1,0 +1,89 @@
+// Copyright 2026 OpenSynergy Indonesia
+// Copyright 2026 PT. Simetri Sinergi Indonesia
+// License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
+// Width is a fixed layout constant, not a themeable color — a local CSS
+// custom property here never crosses a Sass color function, so it is
+// safe on its own terms (unlike $o-brand-odoo/$o-brand-primary, see the
+// comment in ../../scss/backend_theme_primary_variables.scss).
+$o-ssi-apps-sidebar-width: 200px !default;
+$o-ssi-apps-sidebar-width-collapsed: 52px !default;
+
+// Colors deliberately reuse Odoo's own already-compiled variables/classes
+// instead of introducing a new `--ssi-color-*` custom property:
+// $o-navbar-background / $o-navbar-entry-color / $o-navbar-entry-bg--hover
+// (web/static/src/webclient/navbar/navbar.variables.scss) already flow
+// from $o-brand-odoo, which `backend_theme._sync_active_theme_scss_asset()`
+// (models/backend_theme.py) recompiles whenever the active theme changes —
+// so the sidebar automatically matches the active theme without any new
+// bridging mechanism. `bg-primary-subtle` (Bootstrap 5 utility, applied
+// directly in apps_sidebar.xml) is the same class core's own mobile
+// off-canvas sidebar uses for the equivalent "active app" highlight (see
+// `web.NavBar.AppsMenu.Sidebar` in web/static/src/webclient/navbar/navbar.xml).
+.o_ssi_apps_sidebar {
+    width: var(--o-ssi-apps-sidebar-width, #{$o-ssi-apps-sidebar-width});
+    min-width: var(--o-ssi-apps-sidebar-width, #{$o-ssi-apps-sidebar-width});
+    height: calc(100vh - var(--o-navbar-height, #{$o-navbar-height}));
+    background: $o-navbar-background;
+    color: var(--NavBar-entry-color, #{$o-navbar-entry-color});
+    transition:
+        width 0.2s ease-in-out,
+        min-width 0.2s ease-in-out;
+    overflow: hidden;
+
+    &.o_ssi_apps_sidebar_collapsed {
+        width: var(
+            --o-ssi-apps-sidebar-width-collapsed,
+            #{$o-ssi-apps-sidebar-width-collapsed}
+        );
+        min-width: var(
+            --o-ssi-apps-sidebar-width-collapsed,
+            #{$o-ssi-apps-sidebar-width-collapsed}
+        );
+
+        .o_ssi_apps_sidebar_app_name {
+            display: none;
+        }
+    }
+}
+
+.o_ssi_apps_sidebar_toggle {
+    color: inherit;
+}
+
+.o_ssi_apps_sidebar_app {
+    > a {
+        color: inherit;
+        text-decoration: none;
+        padding: 0.5rem 0.75rem;
+
+        &:hover {
+            background-color: $o-navbar-entry-bg--hover;
+            color: inherit;
+        }
+    }
+
+    &.bg-primary-subtle > a {
+        font-weight: bold;
+    }
+}
+
+.o_ssi_apps_sidebar_app_icon {
+    height: 1.5em;
+    width: 1.5em;
+    margin-right: 0.5rem;
+    flex-shrink: 0;
+}
+
+.o_ssi_apps_sidebar_sections {
+    font-size: 0.9em;
+
+    .o_ssi_apps_sidebar_section {
+        padding: 0.35rem 1rem;
+        cursor: pointer;
+
+        &:hover {
+            background-color: $o-navbar-entry-bg--hover;
+        }
+    }
+}

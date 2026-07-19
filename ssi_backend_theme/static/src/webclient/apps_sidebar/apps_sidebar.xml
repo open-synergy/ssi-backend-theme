@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="ssi_backend_theme.AppsSidebar">
+        <aside
+            class="o_ssi_apps_sidebar d-flex flex-column flex-nowrap d-print-none"
+            t-att-class="{o_ssi_apps_sidebar_collapsed: state.collapsed}"
+        >
+            <div
+                class="o_ssi_apps_sidebar_toggle d-flex align-items-center justify-content-end flex-shrink-0"
+            >
+                <button
+                    class="btn btn-sm bg-transparent border-0"
+                    t-att-aria-label="toggleLabel"
+                    t-att-title="toggleLabel"
+                    t-on-click="toggle"
+                >
+                    <i
+                        class="oi"
+                        t-att-class="state.collapsed ? 'oi-chevron-right' : 'oi-chevron-left'"
+                        aria-hidden="true"
+                    />
+                </button>
+            </div>
+            <ul
+                class="o_ssi_apps_sidebar_apps list-unstyled flex-shrink-0 overflow-auto mb-0"
+            >
+                <t t-foreach="apps" t-as="app" t-key="app.id">
+                    <li
+                        class="o_ssi_apps_sidebar_app"
+                        t-att-class="{'bg-primary-subtle': isCurrentApp(app)}"
+                        t-att-data-menu-xmlid="app.xmlid"
+                    >
+                        <a
+                            t-att-href="getMenuItemHref(app)"
+                            t-att-title="app.name"
+                            class="d-flex align-items-center"
+                            t-on-click.prevent="() => this.onAppClick(app)"
+                        >
+                            <img
+                                t-if="app.webIconData"
+                                class="o_ssi_apps_sidebar_app_icon flex-shrink-0"
+                                t-attf-src="{{app.webIconData}}"
+                                alt=""
+                            />
+                            <span
+                                class="o_ssi_apps_sidebar_app_name text-truncate"
+                                t-esc="app.name"
+                            />
+                        </a>
+                    </li>
+                </t>
+            </ul>
+            <t t-if="!state.collapsed and currentAppSections.length">
+                <hr class="my-1 flex-shrink-0" />
+                <ul
+                    class="o_ssi_apps_sidebar_sections list-unstyled flex-grow-1 overflow-auto mb-0"
+                >
+                    <t t-foreach="currentAppSections" t-as="section" t-key="section.id">
+                        <li
+                            class="o_ssi_apps_sidebar_section text-truncate"
+                            t-att-data-menu-xmlid="section.xmlid"
+                            t-on-click="() => this.onSectionClick(section)"
+                        >
+                            <t t-esc="section.name" />
+                        </li>
+                    </t>
+                </ul>
+            </t>
+        </aside>
+    </t>
+
+</templates>

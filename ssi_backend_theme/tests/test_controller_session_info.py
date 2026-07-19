@@ -10,6 +10,7 @@ from ..models.backend_theme import (
     DEFAULT_COLOR_NAVBAR_TEXT,
     DEFAULT_COLOR_PRIMARY,
     DEFAULT_FONT_FAMILY,
+    DEFAULT_SIDEBAR_STATE,
 )
 
 
@@ -68,6 +69,36 @@ class TestControllerSessionInfo(HttpCase):
         self.assertEqual(backend_theme["color_navbar_bg"], DEFAULT_COLOR_NAVBAR_BG)
         self.assertEqual(backend_theme["color_navbar_text"], DEFAULT_COLOR_NAVBAR_TEXT)
         self.assertEqual(backend_theme["font_family"], DEFAULT_FONT_FAMILY)
+        self.assertEqual(backend_theme["sidebar_default"], DEFAULT_SIDEBAR_STATE)
+        self.assertEqual(DEFAULT_SIDEBAR_STATE, "expanded")
+
+    def test_session_info_active_theme_sidebar_collapsed(self):
+        theme = self.env["backend_theme"].create(
+            {
+                "name": "Collapsed Sidebar Theme",
+                "code": "IRH004",
+                "sidebar_default": "collapsed",
+            }
+        )
+        self._set_active_theme_param(theme.id)
+
+        backend_theme = self._get_backend_theme_session_info()
+
+        self.assertEqual(backend_theme["sidebar_default"], "collapsed")
+
+    def test_session_info_active_theme_sidebar_expanded(self):
+        theme = self.env["backend_theme"].create(
+            {
+                "name": "Expanded Sidebar Theme",
+                "code": "IRH005",
+                "sidebar_default": "expanded",
+            }
+        )
+        self._set_active_theme_param(theme.id)
+
+        backend_theme = self._get_backend_theme_session_info()
+
+        self.assertEqual(backend_theme["sidebar_default"], "expanded")
 
     def test_session_info_deleted_theme_uses_defaults(self):
         theme = self.env["backend_theme"].create(

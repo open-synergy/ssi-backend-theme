@@ -44,6 +44,7 @@
         ],
         "web.assets_backend": [
             "ssi_backend_theme/static/src/js/*",
+            "ssi_backend_theme/static/src/webclient/apps_sidebar/*",
         ],
     },
 }
