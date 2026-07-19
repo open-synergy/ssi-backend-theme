@@ -1,0 +1,94 @@
+# Copyright 2026 OpenSynergy Indonesia
+# Copyright 2026 PT. Simetri Sinergi Indonesia
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
+from odoo.tests import HttpCase, tagged
+
+from ..models.backend_theme import (
+    CONFIG_PARAM_ACTIVE_THEME_ID,
+    DEFAULT_COLOR_NAVBAR_BG,
+    DEFAULT_COLOR_NAVBAR_TEXT,
+    DEFAULT_COLOR_PRIMARY,
+    DEFAULT_FONT_FAMILY,
+)
+
+
+@tagged("post_install", "-at_install")
+class TestControllerSessionInfo(HttpCase):
+    """Python murni — pemicu P7 (L-19: base class terkunci `TransactionCase`).
+
+    `ir.http.session_info()` reads `request.session`/`request.httprequest`
+    (see `addons/web/models/ir_http.py`), which is only bound during a
+    real HTTP request. Calling it from a plain `TransactionCase` (which
+    `YamlTransactionCase`/YAML scenarios are built on) raises
+    `RuntimeError: object unbound`, so this can only be tested through
+    an actual HTTP round-trip via `HttpCase`, hitting the core route
+    `/web/session/get_session_info` (`addons/web/controllers/session.py`)
+    that calls `session_info()` for real.
+    """
+
+    def _set_active_theme_param(self, theme_id):
+        self.env["ir.config_parameter"].sudo().set_param(
+            CONFIG_PARAM_ACTIVE_THEME_ID, theme_id or ""
+        )
+
+    def _get_backend_theme_session_info(self):
+        self.authenticate("admin", "admin")
+        result = self.make_jsonrpc_request("/web/session/get_session_info")
+        return result["backend_theme"]
+
+    def test_session_info_active_theme(self):
+        theme = self.env["backend_theme"].create(
+            {
+                "name": "Session Theme",
+                "code": "IRH001",
+                "color_primary": "#123456",
+                "color_navbar_bg": "#654321",
+                "color_navbar_text": "#abcdef",
+                "font_family": "Roboto, sans-serif",
+            }
+        )
+        self._set_active_theme_param(theme.id)
+
+        backend_theme = self._get_backend_theme_session_info()
+
+        self.assertEqual(backend_theme["id"], theme.id)
+        self.assertEqual(backend_theme["color_primary"], "#123456")
+        self.assertEqual(backend_theme["color_navbar_bg"], "#654321")
+        self.assertEqual(backend_theme["color_navbar_text"], "#abcdef")
+        self.assertEqual(backend_theme["font_family"], "Roboto, sans-serif")
+
+    def test_session_info_no_theme_configured_uses_defaults(self):
+        self._set_active_theme_param(None)
+
+        backend_theme = self._get_backend_theme_session_info()
+
+        self.assertFalse(backend_theme["id"])
+        self.assertEqual(backend_theme["color_primary"], DEFAULT_COLOR_PRIMARY)
+        self.assertEqual(backend_theme["color_navbar_bg"], DEFAULT_COLOR_NAVBAR_BG)
+        self.assertEqual(backend_theme["color_navbar_text"], DEFAULT_COLOR_NAVBAR_TEXT)
+        self.assertEqual(backend_theme["font_family"], DEFAULT_FONT_FAMILY)
+
+    def test_session_info_deleted_theme_uses_defaults(self):
+        theme = self.env["backend_theme"].create(
+            {"name": "Deleted Theme", "code": "IRH002", "color_primary": "#ff0000"}
+        )
+        self._set_active_theme_param(theme.id)
+        theme.unlink()
+
+        backend_theme = self._get_backend_theme_session_info()
+
+        self.assertFalse(backend_theme["id"])
+        self.assertEqual(backend_theme["color_primary"], DEFAULT_COLOR_PRIMARY)
+
+    def test_session_info_archived_theme_uses_defaults(self):
+        theme = self.env["backend_theme"].create(
+            {"name": "Archived Theme", "code": "IRH003", "color_primary": "#ff0000"}
+        )
+        self._set_active_theme_param(theme.id)
+        theme.active = False
+
+        backend_theme = self._get_backend_theme_session_info()
+
+        self.assertFalse(backend_theme["id"])
+        self.assertEqual(backend_theme["color_primary"], DEFAULT_COLOR_PRIMARY)

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2026 OpenSynergy Indonesia
+     Copyright 2026 PT. Simetri Sinergi Indonesia
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="res_config_settings_view_form" model="ir.ui.view">
+        <field name="name">res.config.settings - form - ssi_backend_theme</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base_setup.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//block[@name='companies_setting_container']" position="after">
+                <block title="Backend Theme" name="backend_theme_setting_container">
+                    <setting
+                        id="backend_theme_active_setting"
+                        string="Active Backend Theme"
+                        help="Backend theme preset applied to the backend UI. Takes effect for every user after the browser reloads. Leave empty to use the default look."
+                    >
+                        <field
+                            name="backend_theme_active_id"
+                            options="{'no_create': True}"
+                        />
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

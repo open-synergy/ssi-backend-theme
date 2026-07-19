@@ -1,0 +1,31 @@
+// Copyright 2026 OpenSynergy Indonesia
+// Copyright 2026 PT. Simetri Sinergi Indonesia
+// License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
+// Default values for the two Odoo brand variables that drive the most
+// visible backend surfaces — $o-brand-odoo (navbar background) and
+// $o-brand-primary (Bootstrap $primary: buttons, links, badges, active
+// state) — used while no `backend_theme` has ever been made active.
+//
+// These CANNOT be bridged through a CSS custom property like the rest
+// of the active theme's values: Odoo core and Bootstrap 5 both feed
+// them through Sass color functions (darken() in
+// web/static/src/webclient/navbar/navbar.variables.scss and
+// web/static/src/scss/primary_variables.scss, plus Bootstrap 5's own
+// tint-color()/shade-color() subtle-color system), which require a
+// real Sass color operand and reject a `var()` reference outright.
+// Once an active theme is set, `backend_theme._sync_active_theme_scss_asset()`
+// (models/backend_theme.py) transparently replaces this whole file
+// (via `ir.asset`'s `replace` directive, targeting this file's own
+// manifest-declared path) with a freshly generated version containing
+// the active theme's literal colors — the values below are only ever
+// compiled as-is before any theme has been activated.
+//
+// Registered with `prepend` on `web._assets_primary_variables` (see
+// __manifest__.py) so this file is compiled BEFORE
+// web/static/src/scss/primary_variables.scss declares the same
+// variables with `!default` — the first `!default` assignment wins,
+// so ours must run first. The values match Odoo's own
+// $o-community-color, so the backend looks unchanged by default.
+$o-brand-odoo: #71639e !default;
+$o-brand-primary: #71639e !default;
