@@ -6,6 +6,19 @@
             class="o_ssi_apps_sidebar d-flex flex-column flex-nowrap d-print-none"
             t-att-class="{o_ssi_apps_sidebar_collapsed: state.collapsed}"
         >
+            <a
+                href="/odoo"
+                class="o_ssi_apps_sidebar_logo d-flex align-items-center flex-shrink-0"
+                t-att-aria-label="companyName"
+                t-att-title="companyName"
+            >
+                <img
+                    t-if="state.hasCompanyLogo"
+                    class="o_ssi_apps_sidebar_logo_img"
+                    t-attf-src="{{companyLogoUrl}}"
+                    alt=""
+                />
+            </a>
             <div
                 class="o_ssi_apps_sidebar_toggle d-flex align-items-center justify-content-end flex-shrink-0"
             >
