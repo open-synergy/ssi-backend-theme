@@ -162,6 +162,36 @@ class TestControllerSessionInfo(HttpCase):
 
         self.assertEqual(backend_theme["app_submenu_position"], "popover")
 
+    def test_session_info_active_theme_group_apps_by_category_true(self):
+        theme = self.env["backend_theme"].create(
+            {
+                "name": "Grouped Sidebar Theme",
+                "code": "IRH009",
+                "group_apps_by_category": True,
+            }
+        )
+        self._set_active_theme_param(theme.id)
+
+        backend_theme = self._get_backend_theme_session_info()
+
+        self.assertTrue(backend_theme["group_apps_by_category"])
+        # The category map is only resolved while the toggle is on (issue
+        # #18) -- a dict, never absent/None, so the browser-side component
+        # never needs a defensive `|| {}` further down the chain than the
+        # single spot it already applies (`session.backend_theme || {}`).
+        self.assertIsInstance(backend_theme["app_categories"], dict)
+
+    def test_session_info_no_theme_configured_group_apps_by_category_false(self):
+        self._set_active_theme_param(None)
+
+        backend_theme = self._get_backend_theme_session_info()
+
+        # Issue #18: no active theme -> group_apps_by_category is False,
+        # matching the field's own default so an update never changes an
+        # existing deployment's sidebar.
+        self.assertFalse(backend_theme["group_apps_by_category"])
+        self.assertEqual(backend_theme["app_categories"], {})
+
     def test_session_info_deleted_theme_uses_defaults(self):
         theme = self.env["backend_theme"].create(
             {"name": "Deleted Theme", "code": "IRH002", "color_primary": "#ff0000"}

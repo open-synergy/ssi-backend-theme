@@ -335,6 +335,14 @@ class BackendTheme(models.Model):
         default=True,
         help="Uncheck to hide the BOOKMARKS tab from the sidebar's footer panel.",
     )
+    group_apps_by_category = fields.Boolean(
+        string="Group Apps by Category",
+        default=False,
+        help="Split the sidebar's app list into titled sections by each "
+        "app's module category, instead of one flat list. Apps with no "
+        'resolvable category are grouped under "Other". Leave unchecked '
+        "to keep the current flat list.",
+    )
 
     @api.constrains(*COLOR_FIELD_NAMES)
     def _check_color_hex_format(self):
@@ -408,6 +416,79 @@ class BackendTheme(models.Model):
         return theme
 
     @api.model
+    def _get_app_module_categories(self):
+        """Map each app's ``ir.ui.menu`` id to its owning module's category.
+
+        Odoo 19's own client-side ``menuService`` payload
+        (``load_web_menus()``, ``addons/web/models/ir_ui_menu.py``, and
+        ``computeAppsAndMenuItems()``,
+        ``addons/web/static/src/webclient/menus/menu_helpers.js``)
+        carries no category/category_id key at all — verified directly
+        against that source before writing this method (issue #18). So
+        the mapping is resolved here instead, server-side: for each
+        top-level (``parent_id`` false) menu, the defining module is
+        read off its own ``ir.model.data`` xmlid (``module.name``, via
+        the core ``_get_menuitems_xmlids()`` helper), then that
+        module's ``category_id`` is looked up on ``ir.module.module``.
+
+        Returns ``{menu_id: {"id": int, "name": str, "sequence": int}}``
+        for every app that resolves to a category; an app with no
+        xmlid, no matching module, or a module with no category is
+        simply absent from the result — callers treat a missing key the
+        same as "no category" (grouped under "Other").
+        """
+        apps = self.env["ir.ui.menu"].sudo().search([("parent_id", "=", False)])
+        if not apps:
+            return {}
+
+        xmlids = apps._get_menuitems_xmlids()
+        module_name_by_app_id = {}
+        module_names = set()
+        for app_id, xmlid in xmlids.items():
+            module_name = xmlid.split(".", 1)[0] if xmlid and "." in xmlid else False
+            if module_name:
+                module_name_by_app_id[app_id] = module_name
+                module_names.add(module_name)
+        if not module_names:
+            return {}
+
+        category_id_by_module = {}
+        for module in (
+            self.env["ir.module.module"]
+            .sudo()
+            .search_read(
+                [("name", "in", list(module_names))],
+                ["name", "category_id"],
+            )
+        ):
+            if module["category_id"]:
+                category_id_by_module[module["name"]] = module["category_id"][0]
+        if not category_id_by_module:
+            return {}
+
+        category_info_by_id = {
+            category["id"]: {
+                "id": category["id"],
+                "name": category["name"],
+                "sequence": category["sequence"],
+            }
+            for category in self.env["ir.module.category"]
+            .sudo()
+            .search_read(
+                [("id", "in", list(set(category_id_by_module.values())))],
+                ["name", "sequence"],
+            )
+        }
+
+        result = {}
+        for app_id, module_name in module_name_by_app_id.items():
+            category_id = category_id_by_module.get(module_name)
+            category = category_id and category_info_by_id.get(category_id)
+            if category:
+                result[app_id] = category
+        return result
+
+    @api.model
     def _get_backend_theme_session_values(self):
         """Build the ``backend_theme`` payload exposed via ``session_info()``.
 
@@ -416,6 +497,7 @@ class BackendTheme(models.Model):
         is no active theme, the module's own defaults are used instead.
         """
         theme = self._get_active_theme()
+        group_apps_by_category = theme.group_apps_by_category if theme else False
         return {
             "id": theme.id,
             "name": theme.name if theme else False,
@@ -448,6 +530,16 @@ class BackendTheme(models.Model):
             "show_sidebar_logo": theme.show_sidebar_logo if theme else True,
             "show_sidebar_recent": theme.show_sidebar_recent if theme else True,
             "show_sidebar_bookmarks": (theme.show_sidebar_bookmarks if theme else True),
+            "group_apps_by_category": group_apps_by_category,
+            # Only resolved when actually needed (issue #18): with the
+            # toggle off — the default, and the common case — this skips
+            # the extra ir.module.module/ir.module.category queries on
+            # every session_info() call. A theme change always forces a
+            # fresh page load, so there is no stale-payload risk from
+            # gating it behind the (already-resolved) toggle value above.
+            "app_categories": (
+                self._get_app_module_categories() if group_apps_by_category else {}
+            ),
         }
 
     @api.model
