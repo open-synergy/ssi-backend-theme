@@ -106,6 +106,7 @@
                         <group name="defaults_group_1" string="Layout Defaults">
                             <field name="sidebar_default" />
                             <field name="color_scheme_default" />
+                            <field name="app_submenu_position" />
                         </group>
                         <group name="defaults_group_2" string="Sidebar Visibility">
                             <field name="show_sidebar" />

@@ -509,6 +509,52 @@ scenarios:
             type: "value"
             expected: "46px"
 
+  - name: "Create Backend Theme without app_submenu_position uses default navbar"
+    steps:
+      - step: "Create theme without mentioning app_submenu_position"
+        action: "create"
+        model: "backend_theme"
+        save_as: "theme"
+        values:
+          name: "Default Submenu Position Theme"
+          code: "THM019"
+
+      - step: "Assert app_submenu_position defaults to navbar"
+        action: "assert"
+        target: "theme"
+        asserts:
+          app_submenu_position:
+            type: "value"
+            expected: "navbar"
+
+  - name:
+      "Writing an invalid app_submenu_position value is rejected and keeps the old value"
+    steps:
+      - step: "Create theme with a valid popover app_submenu_position"
+        action: "create"
+        model: "backend_theme"
+        save_as: "theme"
+        values:
+          name: "Submenu Position Write Theme"
+          code: "THM020"
+          app_submenu_position: "popover"
+
+      - step: "Write an app_submenu_position value outside the selection must fail"
+        action: "write"
+        target: "theme"
+        expect_error:
+          type: "ValueError"
+        values:
+          app_submenu_position: "melayang"
+
+      - step: "Assert the old app_submenu_position value is unchanged"
+        action: "assert"
+        target: "theme"
+        asserts:
+          app_submenu_position:
+            type: "value"
+            expected: "popover"
+
   - name: "Writing a wrong-length color_list_header_bg value is rejected"
     steps:
       - step: "Create theme with a valid color_list_header_bg"

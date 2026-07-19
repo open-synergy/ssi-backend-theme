@@ -49,7 +49,7 @@
                             t-att-href="getMenuItemHref(app)"
                             t-att-title="app.name"
                             class="d-flex align-items-center"
-                            t-on-click.prevent="() => this.onAppClick(app)"
+                            t-on-click.prevent="(ev) => this.onAppClick(app, ev)"
                         >
                             <img
                                 t-if="app.webIconData"
@@ -65,6 +65,25 @@
                     </li>
                 </t>
             </ul>
+            <!-- Inline "sidebar" submenu (issue #17): the current app's own
+                 sections, only in "sidebar" mode (never alongside "navbar"
+                 or "popover" — see `showInlineSubmenu`, apps_sidebar.esm.js). -->
+            <t t-if="showInlineSubmenu">
+                <hr class="my-1 flex-shrink-0" />
+                <ul
+                    class="o_ssi_apps_sidebar_sections list-unstyled flex-grow-1 overflow-auto mb-0"
+                >
+                    <t t-foreach="currentAppSections" t-as="section" t-key="section.id">
+                        <li
+                            class="o_ssi_apps_sidebar_section text-truncate"
+                            t-att-data-menu-xmlid="section.xmlid"
+                            t-on-click="() => this.onSectionClick(section)"
+                        >
+                            <t t-esc="section.name" />
+                        </li>
+                    </t>
+                </ul>
+            </t>
             <!-- RECENT/BOOKMARKS panel (issue #13): only while expanded;
                  fully absent from the DOM, not just visually hidden, when
                  collapsed. Also fully absent (issue #16) when the active

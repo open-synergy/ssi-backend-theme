@@ -1,0 +1,22 @@
+// Copyright 2026 OpenSynergy Indonesia
+// Copyright 2026 PT. Simetri Sinergi Indonesia
+// License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
+// Popover content listing the active app's submenu sections (issue #17),
+// opened on the app's own sidebar item (apps_sidebar.esm.js). Colors reuse
+// the same Bootstrap 5 utility classes/variables the rest of the sidebar
+// already relies on (see the comment above `.o_ssi_apps_sidebar` in
+// apps_sidebar.scss) -- no new `--ssi-*` custom property needed here.
+.o_ssi_app_submenu_popover {
+    min-width: 180px;
+    max-width: 320px;
+
+    .o_ssi_app_submenu_popover_section {
+        padding: 0.35rem 1rem;
+        cursor: pointer;
+
+        &:hover {
+            background-color: $o-navbar-entry-bg--hover;
+        }
+    }
+}

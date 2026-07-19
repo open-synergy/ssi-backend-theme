@@ -6,6 +6,7 @@ from odoo.tests import HttpCase, tagged
 
 from ..models.backend_theme import (
     CONFIG_PARAM_ACTIVE_THEME_ID,
+    DEFAULT_APP_SUBMENU_POSITION,
     DEFAULT_COLOR_NAVBAR_BG,
     DEFAULT_COLOR_NAVBAR_TEXT,
     DEFAULT_COLOR_PRIMARY,
@@ -76,6 +77,11 @@ class TestControllerSessionInfo(HttpCase):
         self.assertTrue(backend_theme["show_sidebar_logo"])
         self.assertTrue(backend_theme["show_sidebar_recent"])
         self.assertTrue(backend_theme["show_sidebar_bookmarks"])
+        # Issue #17: no active theme -> app_submenu_position is "navbar".
+        self.assertEqual(
+            backend_theme["app_submenu_position"], DEFAULT_APP_SUBMENU_POSITION
+        )
+        self.assertEqual(DEFAULT_APP_SUBMENU_POSITION, "navbar")
 
     def test_session_info_active_theme_sidebar_hidden(self):
         theme = self.env["backend_theme"].create(
@@ -141,6 +147,20 @@ class TestControllerSessionInfo(HttpCase):
         backend_theme = self._get_backend_theme_session_info()
 
         self.assertEqual(backend_theme["sidebar_default"], "expanded")
+
+    def test_session_info_active_theme_app_submenu_position_popover(self):
+        theme = self.env["backend_theme"].create(
+            {
+                "name": "Popover Submenu Theme",
+                "code": "IRH008",
+                "app_submenu_position": "popover",
+            }
+        )
+        self._set_active_theme_param(theme.id)
+
+        backend_theme = self._get_backend_theme_session_info()
+
+        self.assertEqual(backend_theme["app_submenu_position"], "popover")
 
     def test_session_info_deleted_theme_uses_defaults(self):
         theme = self.env["backend_theme"].create(
