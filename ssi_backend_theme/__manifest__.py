@@ -47,6 +47,8 @@
             "ssi_backend_theme/static/src/js/*",
             "ssi_backend_theme/static/src/webclient/apps_sidebar/*",
             "ssi_backend_theme/static/src/webclient/color_scheme/*",
+            "ssi_backend_theme/static/src/scss/backend_theme_list_view.scss",
+            "ssi_backend_theme/static/src/scss/backend_theme_form_view.scss",
         ],
     },
 }

@@ -1,0 +1,64 @@
+// Copyright 2026 OpenSynergy Indonesia
+// Copyright 2026 PT. Simetri Sinergi Indonesia
+// License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
+// List view polish (issue #4): roomier header/row spacing, a clearer
+// header separator, and a soft row-hover highlight — all driven by
+// Odoo's own spacer scale and the `$border-color`/`$primary` Sass
+// variables (never a literal hex, never a new `--ssi-color-*` custom
+// property — see the comment in backend_theme_primary_variables.scss
+// for why color values must stay real Sass colors, not `var()`).
+// `$primary` already resolves to `$o-brand-primary`
+// (web/static/src/scss/bootstrap_overridden.scss:31), so the row-hover
+// tint automatically follows whichever theme is active, recompiled the
+// same way as the rest of the backend by
+// `backend_theme._sync_active_theme_scss_asset()` (models/backend_theme.py).
+//
+// Scoped under `.o_web_client` — the backend webclient's own root class
+// (web/static/src/webclient/webclient_layout.scss:23), present only
+// while the backend renders and never on portal/website pages — so this
+// file cannot leak outside the backend even though it ships in the
+// shared `web.assets_backend` bundle. `.o_list_view` is further added so
+// this only ever targets a real, top-level list view (an one2many/
+// many2many list embedded in a form renders `.o_list_renderer` directly,
+// without an `.o_list_view` ancestor — views/fields/x2many/x2many_field.xml
+// — so nested list widgets are left untouched).
+//
+// `--ListRenderer-*` and the nested `.o_list_view &` custom properties
+// are Odoo's own override points (web/static/src/views/list/
+// list_renderer.scss); we only reassign their values — no `!important`,
+// no re-declared selector.
+.o_web_client .o_list_view .o_list_renderer {
+    // Core's own default dips this back down to `$table-cell-padding-y-sm`
+    // for a real (non-embedded) list view; spacer 4 gives a visibly
+    // airier header without inventing a new magic number.
+    --ListRenderer-thead-padding-y: #{map-get($spacers, 4)};
+    --ListRenderer-table-padding-x: #{$o-spacer};
+
+    // A visible but not heavy separator between data rows.
+    --ListRenderer-data-row-border-bottom-width: 2px;
+
+    .o_list_table {
+        thead th {
+            border-bottom: #{$border-width * 2} solid $border-color;
+        }
+
+        .o_data_row {
+            transition: background-color 0.15s ease-in-out;
+
+            &:hover > td {
+                background-color: rgba($primary, 0.06);
+            }
+
+            &:hover > td:first-child {
+                border-top-left-radius: $o-border-radius;
+                border-bottom-left-radius: $o-border-radius;
+            }
+
+            &:hover > td:last-child {
+                border-top-right-radius: $o-border-radius;
+                border-bottom-right-radius: $o-border-radius;
+            }
+        }
+    }
+}
