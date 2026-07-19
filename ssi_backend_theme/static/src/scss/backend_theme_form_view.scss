@@ -1,0 +1,44 @@
+// Copyright 2026 OpenSynergy Indonesia
+// Copyright 2026 PT. Simetri Sinergi Indonesia
+// License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
+// Form view polish (issue #4): roomier sheet padding, softer sheet
+// corners, less sharp statusbar arrows, and a brand-colored current
+// breadcrumb — reusing Odoo's own responsive override hooks (custom
+// properties suffixed `-md`/`-xxl` in web/static/src/views/form/
+// form_controller.scss) and its own radius scale
+// ($o-border-radius-sm/$o-border-radius-lg,
+// web/static/src/scss/primary_variables.scss), so nothing here is a
+// magic number. Text emphasis uses `$link-color`
+// (web/static/src/scss/bootstrap_overridden.scss:76, itself
+// `darken($o-brand-primary, 5%)`) rather than raw `$primary`, matching
+// how Odoo already emphasizes brand-colored text elsewhere with a
+// contrast-safe shade instead of the raw button/badge color.
+//
+// Scoped under `.o_web_client` for the same reason as
+// backend_theme_list_view.scss — see that file's comment. `.o_form_view`
+// is the root class of a real (non-dialog, non-quick-create) form,
+// always the closest ancestor of `.o_form_sheet`/`.o_field_statusbar`
+// (views/form/form_compiler.js), so this cannot bleed into embedded
+// widgets that build their own `o_form_view` className manually (kanban
+// quick-create, multi-create popover).
+.o_web_client .o_form_view {
+    .o_form_sheet {
+        // Core's own breakpoint ladder dips padding back down at `xxl`
+        // (form_controller.scss); reassigning the `-md`/`-xxl` hooks keeps
+        // it consistently roomy instead of narrowing again on very large
+        // screens.
+        --formView-sheet-padding-y-md: #{map-get($spacers, 4)};
+        --formView-sheet-padding-y-xxl: #{map-get($spacers, 4)};
+        --formView-sheet-padding-x-xxl: #{map-get($spacers, 4)};
+        --formView-sheet-border-radius-md: #{$o-border-radius-lg};
+    }
+
+    .o_field_statusbar > .o_statusbar_status {
+        --o-statusbar-radius: #{$o-border-radius-sm};
+    }
+}
+
+.o_web_client .o_breadcrumb .o_last_breadcrumb_item {
+    color: $link-color;
+}
