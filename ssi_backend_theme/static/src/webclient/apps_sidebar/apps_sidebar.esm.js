@@ -1,11 +1,12 @@
 // Copyright 2026 OpenSynergy Indonesia
 // Copyright 2026 PT. Simetri Sinergi Indonesia
 // License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-import {Component, onMounted, onWillUnmount, useState} from "@odoo/owl";
+import {Component, onMounted, onWillStart, onWillUnmount, useState} from "@odoo/owl";
 import {_t} from "@web/core/l10n/translation";
 import {browser} from "@web/core/browser/browser";
 import {session} from "@web/session";
 import {useService} from "@web/core/utils/hooks";
+import {user} from "@web/core/user";
 
 // Device-local preference: intentionally NOT stored server-side. Only the
 // *default* (used the very first time, before this key is ever written)
@@ -61,7 +62,37 @@ export class AppsSidebar extends Component {
 
     setup() {
         this.menuService = useService("menu");
-        this.state = useState({collapsed: getInitialCollapsedState()});
+        this.orm = useService("orm");
+        // Active company id/name: already available client-side via the
+        // `user` singleton (populated from `session.user_companies` at
+        // webclient boot) — no extra RPC needed just to know *which*
+        // company to show.
+        this.companyId = user.activeCompany ? user.activeCompany.id : false;
+        this.companyName = user.activeCompany ? user.activeCompany.name : "";
+        this.state = useState({
+            collapsed: getInitialCollapsedState(),
+            // Starts hidden: `uses_default_logo` (existing stored field on
+            // `res.company`, core `base` module — read here through the
+            // ORM's standard, already-existing generic `read` RPC; no new
+            // field/model/controller/RPC is introduced) is only known once
+            // the read below resolves. True means the company has no logo
+            // of its own — either the field is empty or it still holds the
+            // generic Odoo default set at company creation — in which case
+            // the block must stay empty rather than show that generic mark.
+            hasCompanyLogo: false,
+        });
+
+        onWillStart(async () => {
+            if (!this.companyId) {
+                return;
+            }
+            const [company] = await this.orm.read(
+                "res.company",
+                [this.companyId],
+                ["uses_default_logo"]
+            );
+            this.state.hasCompanyLogo = Boolean(company && !company.uses_default_logo);
+        });
 
         onMounted(() => this.updateCurrentWidthProperty());
 
@@ -108,6 +139,10 @@ export class AppsSidebar extends Component {
 
     get toggleLabel() {
         return this.state.collapsed ? _t("Expand sidebar") : _t("Collapse sidebar");
+    }
+
+    get companyLogoUrl() {
+        return `/web/image/res.company/${this.companyId}/logo`;
     }
 
     getMenuItemHref(menu) {
