@@ -24,6 +24,12 @@ msgid "Active"
 msgstr ""
 
 #. module: ssi_backend_theme
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_res_config_settings__backend_theme_active_id
+#: model_terms:ir.ui.view,arch_db:ssi_backend_theme.res_config_settings_view_form
+msgid "Active Backend Theme"
+msgstr ""
+
+#. module: ssi_backend_theme
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__activity_ids
 msgid "Activities"
 msgstr ""
@@ -55,7 +61,16 @@ msgstr ""
 #: model:ir.ui.menu,name:ssi_backend_theme.menu_backend_theme
 #: model:ir.ui.menu,name:ssi_backend_theme.menu_backend_theme_root
 #: model:res.groups.privilege,name:ssi_backend_theme.res_groups_privilege_backend_theme
+#: model_terms:ir.ui.view,arch_db:ssi_backend_theme.res_config_settings_view_form
 msgid "Backend Theme"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,help:ssi_backend_theme.field_res_config_settings__backend_theme_active_id
+#: model_terms:ir.ui.view,arch_db:ssi_backend_theme.res_config_settings_view_form
+msgid ""
+"Backend theme preset applied to the backend UI. Takes effect for every user "
+"after the browser reloads. Leave empty to use the default look."
 msgstr ""
 
 #. module: ssi_backend_theme
@@ -95,6 +110,11 @@ msgstr ""
 #. module: ssi_backend_theme
 #: model_terms:ir.ui.view,arch_db:ssi_backend_theme.backend_theme_view_form
 msgid "Colors"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model,name:ssi_backend_theme.model_res_config_settings
+msgid "Config Settings"
 msgstr ""
 
 #. module: ssi_backend_theme
@@ -151,6 +171,8 @@ msgstr ""
 
 #. module: ssi_backend_theme
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__display_name
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_ir_http__display_name
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_res_config_settings__display_name
 msgid "Display Name"
 msgstr ""
 
@@ -185,6 +207,11 @@ msgid "Font awesome icon e.g. fa-tasks"
 msgstr ""
 
 #. module: ssi_backend_theme
+#: model:ir.model,name:ssi_backend_theme.model_ir_http
+msgid "HTTP Routing"
+msgstr ""
+
+#. module: ssi_backend_theme
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__has_message
 msgid "Has Message"
 msgstr ""
@@ -212,6 +239,8 @@ msgstr ""
 
 #. module: ssi_backend_theme
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__id
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_ir_http__id
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_res_config_settings__id
 msgid "ID"
 msgstr ""
 
