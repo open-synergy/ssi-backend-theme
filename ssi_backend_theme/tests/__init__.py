@@ -5,4 +5,6 @@
 from . import test_backend_theme  # noqa: F401
 from . import test_backend_theme_scss_asset  # noqa: F401
 from . import test_controller_session_info  # noqa: F401
+from . import test_ir_http_color_scheme  # noqa: F401
 from . import test_res_config_settings  # noqa: F401
+from . import test_res_users_color_scheme  # noqa: F401

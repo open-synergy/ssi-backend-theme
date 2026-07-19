@@ -27,6 +27,7 @@
         "menu.xml",
         "views/backend_theme.xml",
         "views/res_config_settings.xml",
+        "views/res_users.xml",
     ],
     "assets": {
         "web._assets_primary_variables": [
@@ -45,6 +46,7 @@
         "web.assets_backend": [
             "ssi_backend_theme/static/src/js/*",
             "ssi_backend_theme/static/src/webclient/apps_sidebar/*",
+            "ssi_backend_theme/static/src/webclient/color_scheme/*",
         ],
     },
 }

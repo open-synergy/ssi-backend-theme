@@ -23,6 +23,13 @@ compute several derived shades from them at asset-compile time. If no
 theme is active, or the active one is deleted or archived, the backend
 falls back to the default look.
 
+Each user can also switch their own backend between light and dark mode
+from the systray, or from *Preferences*. This is a personal, per-user
+choice (not part of a theme preset): after the browser reloads, it loads
+the light or dark asset bundle that ships with Odoo 19 Community. The
+initial value defaults to the active theme's own default color scheme,
+but each user's own choice always takes precedence once set.
+
 
 Installation
 ============

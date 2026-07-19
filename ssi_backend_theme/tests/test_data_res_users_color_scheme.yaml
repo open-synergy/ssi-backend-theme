@@ -1,0 +1,110 @@
+scenarios:
+  - name: "Internal user can set their own dark color scheme"
+    steps:
+      - step: "Create an internal user"
+        action: "create"
+        model: "res.users"
+        save_as: "staff"
+        values:
+          name: "Backend Theme Staff"
+          login: "backend_theme_staff@example.com"
+          group_ids: [[6, 0, ["REF: base.group_user"]]]
+
+      - step: "The user sets their own color scheme to dark"
+        action: "write"
+        target: "staff"
+        as_user: "staff"
+        values:
+          backend_theme_color_scheme: "dark"
+
+      - step: "Assert the value was saved"
+        action: "assert"
+        target: "staff"
+        asserts:
+          backend_theme_color_scheme:
+            type: "value"
+            expected: "dark"
+
+  - name: "Internal user can set their own light color scheme"
+    steps:
+      - step: "Create an internal user with dark already set"
+        action: "create"
+        model: "res.users"
+        save_as: "staff"
+        values:
+          name: "Backend Theme Staff Light"
+          login: "backend_theme_staff_light@example.com"
+          group_ids: [[6, 0, ["REF: base.group_user"]]]
+          backend_theme_color_scheme: "dark"
+
+      - step: "The user switches their own color scheme back to light"
+        action: "write"
+        target: "staff"
+        as_user: "staff"
+        values:
+          backend_theme_color_scheme: "light"
+
+      - step: "Assert the value was saved"
+        action: "assert"
+        target: "staff"
+        asserts:
+          backend_theme_color_scheme:
+            type: "value"
+            expected: "light"
+
+  - name: "An invalid color scheme value is rejected"
+    steps:
+      - step: "Create an internal user"
+        action: "create"
+        model: "res.users"
+        save_as: "staff"
+        values:
+          name: "Backend Theme Staff Invalid"
+          login: "backend_theme_staff_invalid@example.com"
+          group_ids: [[6, 0, ["REF: base.group_user"]]]
+
+      - step: "Writing an out-of-selection value must fail"
+        action: "write"
+        target: "staff"
+        as_user: "staff"
+        expect_error:
+          type: "ValueError"
+        values:
+          backend_theme_color_scheme: "neon"
+
+  - name: "An internal user cannot change another user's color scheme"
+    steps:
+      - step: "Create the target user"
+        action: "create"
+        model: "res.users"
+        save_as: "target_user"
+        values:
+          name: "Backend Theme Target"
+          login: "backend_theme_target@example.com"
+          group_ids: [[6, 0, ["REF: base.group_user"]]]
+
+      - step: "Create another internal user"
+        action: "create"
+        model: "res.users"
+        save_as: "other_user"
+        values:
+          name: "Backend Theme Other"
+          login: "backend_theme_other@example.com"
+          group_ids: [[6, 0, ["REF: base.group_user"]]]
+
+      - step: "The other user tries to change target_user's color scheme"
+        action: "write"
+        target: "target_user"
+        as_user: "other_user"
+        expect_error:
+          type: "AccessError"
+        values:
+          backend_theme_color_scheme: "dark"
+
+      - step: "Assert target_user's value is unchanged (still the default)"
+        action: "assert"
+        target: "target_user"
+        asserts:
+          backend_theme_color_scheme:
+            type: "value"
+            expected: "light"
