@@ -1,7 +1,7 @@
 // Copyright 2026 OpenSynergy Indonesia
 // Copyright 2026 PT. Simetri Sinergi Indonesia
 // License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
-import {Component, onWillUnmount, useState} from "@odoo/owl";
+import {Component, onMounted, onWillUnmount, useState} from "@odoo/owl";
 import {_t} from "@web/core/l10n/translation";
 import {browser} from "@web/core/browser/browser";
 import {session} from "@web/session";
@@ -12,6 +12,14 @@ import {useService} from "@web/core/utils/hooks";
 // comes from the database, via the active `backend_theme.sidebar_default`
 // exposed on `session.backend_theme`.
 export const SIDEBAR_STATE_STORAGE_KEY = "ssi_backend_theme.sidebar_state";
+
+// Custom property `.o_web_client` (apps_sidebar.scss) reads to shift the
+// navbar + content area by the sidebar's *current* width. It always points
+// at one of the two width custom properties apps_sidebar.scss sets on
+// `:root` (`--o-ssi-apps-sidebar-width` /
+// `--o-ssi-apps-sidebar-width-collapsed`) rather than a literal pixel
+// value, so the two Sass constants stay the single source of truth.
+const CURRENT_WIDTH_PROPERTY = "--o-ssi-apps-sidebar-current-width";
 
 /**
  * Resolve the collapsed/expanded default carried by the active theme.
@@ -55,14 +63,20 @@ export class AppsSidebar extends Component {
         this.menuService = useService("menu");
         this.state = useState({collapsed: getInitialCollapsedState()});
 
+        onMounted(() => this.updateCurrentWidthProperty());
+
         // Re-render when the current app / menu tree changes so the
-        // highlighted app and the rendered submenu stay in sync — the
-        // same event core's own NavBar listens to (see
-        // web/static/src/webclient/navbar/navbar.js).
+        // highlighted app stays in sync — the same event core's own NavBar
+        // listens to (see web/static/src/webclient/navbar/navbar.js).
         this.onMenusChanged = () => this.render();
         this.env.bus.addEventListener("MENUS:APP-CHANGED", this.onMenusChanged);
         onWillUnmount(() => {
             this.env.bus.removeEventListener("MENUS:APP-CHANGED", this.onMenusChanged);
+            // Mirrors the `!ui.isSmall` guard in navbar_patch.xml: once the
+            // sidebar stops being rendered (e.g. a responsive resize into
+            // `ui.isSmall`, not just a full reload), the shift it caused
+            // must go away too, so `.o_web_client` falls back to 0.
+            document.documentElement.style.removeProperty(CURRENT_WIDTH_PROPERTY);
         });
     }
 
@@ -74,16 +88,22 @@ export class AppsSidebar extends Component {
         return this.menuService.getCurrentApp();
     }
 
-    get currentAppSections() {
-        return (
-            (this.currentApp &&
-                this.menuService.getMenuAsTree(this.currentApp.id).childrenTree) ||
-            []
-        );
-    }
-
     isCurrentApp(app) {
         return Boolean(this.currentApp) && this.currentApp.id === app.id;
+    }
+
+    /**
+     * Point `--o-ssi-apps-sidebar-current-width` at whichever of the two
+     * width custom properties (apps_sidebar.scss, set on `:root`) matches
+     * the current collapsed state.
+     */
+    updateCurrentWidthProperty() {
+        document.documentElement.style.setProperty(
+            CURRENT_WIDTH_PROPERTY,
+            this.state.collapsed
+                ? "var(--o-ssi-apps-sidebar-width-collapsed)"
+                : "var(--o-ssi-apps-sidebar-width)"
+        );
     }
 
     get toggleLabel() {
@@ -100,13 +120,10 @@ export class AppsSidebar extends Component {
             SIDEBAR_STATE_STORAGE_KEY,
             this.state.collapsed ? "collapsed" : "expanded"
         );
+        this.updateCurrentWidthProperty();
     }
 
     onAppClick(app) {
         this.menuService.selectMenu(app);
-    }
-
-    onSectionClick(section) {
-        this.menuService.selectMenu(section);
     }
 }
