@@ -10,6 +10,7 @@ from odoo.tests import tagged
 from ..models.backend_theme import (
     CONFIG_PARAM_ACTIVE_THEME_ID,
     DEFAULT_COLOR_PRIMARY,
+    DEFAULT_COLOR_SUCCESS,
     SCSS_ASSET_BUNDLE,
     SCSS_ASSET_CUSTOM_URL,
     SCSS_ASSET_TARGET_PATH,
@@ -179,6 +180,88 @@ class TestBackendThemeScssAsset(YamlTransactionCase):
 
         content = self._get_generated_scss()
         self.assertIn("$o-brand-primary: #777777 !default;", content)
+
+    def test_sync_creates_asset_with_all_new_color_fields(self):
+        """issue #14: text/background/status colors must reach the
+        regenerated SCSS as the correct, verified Odoo 19 variable names.
+        """
+        theme = self.env["backend_theme"].create(
+            {
+                "name": "Full Palette Theme",
+                "code": "SCSS012",
+                "color_text_body": "#111111",
+                "color_view_background": "#222222",
+                "color_success": "#333333",
+                "color_info": "#444444",
+                "color_warning": "#555555",
+                "color_danger": "#666666",
+            }
+        )
+        self._set_active_theme_param(theme.id)
+        self.env["backend_theme"]._sync_active_theme_scss_asset()
+
+        content = self._get_generated_scss()
+        self.assertIn("$o-main-text-color: #111111 !default;", content)
+        self.assertIn("$o-view-background-color: #222222 !default;", content)
+        self.assertIn("$o-success: #333333 !default;", content)
+        self.assertIn("$o-info: #444444 !default;", content)
+        self.assertIn("$o-warning: #555555 !default;", content)
+        self.assertIn("$o-danger: #666666 !default;", content)
+
+    def test_write_active_theme_status_color_resyncs(self):
+        """issue #14: writing color_success on the active theme must
+        resync the compiled asset, exactly like color_primary already
+        does — the field is required to be in `write()`'s trigger set.
+        """
+        theme = self.env["backend_theme"].create(
+            {"name": "Status Live Theme", "code": "SCSS013", "color_success": "#aaaaaa"}
+        )
+        self._set_active_theme_param(theme.id)
+        self.env["backend_theme"]._sync_active_theme_scss_asset()
+
+        theme.write({"color_success": "#bbbbbb"})
+
+        content = self._get_generated_scss()
+        self.assertIn("$o-success: #bbbbbb !default;", content)
+
+    def test_write_status_color_on_non_active_theme_does_not_resync(self):
+        """issue #14: writing color_success on a theme that is NOT the
+        active one must leave the compiled asset untouched.
+        """
+        active_theme = self.env["backend_theme"].create(
+            {"name": "Still Active 2", "code": "SCSS014", "color_success": "#cccccc"}
+        )
+        other_theme = self.env["backend_theme"].create(
+            {"name": "Not Active 2", "code": "SCSS015", "color_success": "#000000"}
+        )
+        self._set_active_theme_param(active_theme.id)
+        self.env["backend_theme"]._sync_active_theme_scss_asset()
+
+        other_theme.write({"color_success": "#dddddd"})
+
+        content = self._get_generated_scss()
+        self.assertIn("$o-success: #cccccc !default;", content)
+        self.assertNotIn("#dddddd", content)
+
+    def test_clearing_status_color_resyncs_to_default(self):
+        """issue #14: clearing a color field on the active theme must
+        resync the asset back to Odoo's own default value, not leave
+        the previous custom value baked in.
+        """
+        theme = self.env["backend_theme"].create(
+            {
+                "name": "Status Clear Theme",
+                "code": "SCSS016",
+                "color_success": "#777777",
+            }
+        )
+        self._set_active_theme_param(theme.id)
+        self.env["backend_theme"]._sync_active_theme_scss_asset()
+
+        theme.write({"color_success": False})
+
+        content = self._get_generated_scss()
+        self.assertIn(f"$o-success: {DEFAULT_COLOR_SUCCESS} !default;", content)
 
     def test_active_theme_ignores_non_numeric_parameter(self):
         theme = self.env["backend_theme"].create(

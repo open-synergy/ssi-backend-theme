@@ -5,13 +5,10 @@
 // List view polish (issue #4): roomier header/row spacing, a clearer
 // header separator, and a soft row-hover highlight — all driven by
 // Odoo's own spacer scale and the `$border-color`/`$primary` Sass
-// variables (never a literal hex, never a new `--ssi-color-*` custom
-// property — see the comment in backend_theme_primary_variables.scss
-// for why color values must stay real Sass colors, not `var()`).
-// `$primary` already resolves to `$o-brand-primary`
+// variables. `$primary` already resolves to `$o-brand-primary`
 // (web/static/src/scss/bootstrap_overridden.scss:31), so the row-hover
-// tint automatically follows whichever theme is active, recompiled the
-// same way as the rest of the backend by
+// tint's own DEFAULT automatically follows whichever theme is active,
+// recompiled the same way as the rest of the backend by
 // `backend_theme._sync_active_theme_scss_asset()` (models/backend_theme.py).
 //
 // Scoped under `.o_web_client` — the backend webclient's own root class
@@ -28,15 +25,42 @@
 // are Odoo's own override points (web/static/src/views/list/
 // list_renderer.scss); we only reassign their values — no `!important`,
 // no re-declared selector.
+//
+// issue #14: `--ListRenderer-thead-bg-color` and (our own invented)
+// `--ListRenderer-data-row-hover-bg` are additionally wired to the
+// active theme's `color_list_header_bg`/`color_list_row_hover_bg`
+// fields through a `--ssi-list-*` bridge custom property, set on the
+// document root by the OWL service
+// (static/src/js/backend_theme_service.esm.js) only when the field has
+// a value. This selector's higher specificity than core's own
+// `.o_list_renderer { --ListRenderer-thead-bg-color: ...; }` rule is
+// what lets our `var(--ssi-list-header-bg, <default>)` override win;
+// setting `--ListRenderer-thead-bg-color` directly on `:root` would
+// always be shadowed by that core rule regardless of the value's
+// origin. Reading a `var()` here is safe — the rule the
+// primary_variables.scss comment warns against is the opposite:
+// feeding `var()` into a Sass *color variable* (`$primary`,
+// `$o-success`, ...), which Sass color functions reject outright.
 .o_web_client .o_list_view .o_list_renderer {
     // Core's own default dips this back down to `$table-cell-padding-y-sm`
     // for a real (non-embedded) list view; spacer 4 gives a visibly
     // airier header without inventing a new magic number.
     --ListRenderer-thead-padding-y: #{map-get($spacers, 4)};
     --ListRenderer-table-padding-x: #{$o-spacer};
+    --ListRenderer-thead-bg-color: var(
+        --ssi-list-header-bg,
+        #{$o-webclient-background-color}
+    );
 
     // A visible but not heavy separator between data rows.
     --ListRenderer-data-row-border-bottom-width: 2px;
+    // Not a core custom property — invented here, following the same
+    // `--ListRenderer-*` naming family, since core provides no override
+    // point at all for the row-hover background.
+    --ListRenderer-data-row-hover-bg: var(
+        --ssi-list-row-hover-bg,
+        #{rgba($primary, 0.06)}
+    );
 
     .o_list_table {
         thead th {
@@ -47,7 +71,7 @@
             transition: background-color 0.15s ease-in-out;
 
             &:hover > td {
-                background-color: rgba($primary, 0.06);
+                background-color: var(--ListRenderer-data-row-hover-bg);
             }
 
             &:hover > td:first-child {

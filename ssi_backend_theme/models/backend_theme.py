@@ -13,6 +13,14 @@ COLOR_FIELD_NAMES = (
     "color_primary",
     "color_navbar_bg",
     "color_navbar_text",
+    "color_text_body",
+    "color_view_background",
+    "color_success",
+    "color_info",
+    "color_warning",
+    "color_danger",
+    "color_list_header_bg",
+    "color_list_row_hover_bg",
 )
 
 # ir.config_parameter key holding the id of the active backend_theme
@@ -29,6 +37,18 @@ CONFIG_PARAM_ACTIVE_THEME_ID = "ssi_backend_theme.active_theme_id"
 DEFAULT_COLOR_PRIMARY = "#71639e"
 DEFAULT_COLOR_NAVBAR_BG = "#71639e"
 DEFAULT_COLOR_NAVBAR_TEXT = "#ffffff"
+# Matches $o-main-text-color ($o-gray-900), $o-view-background-color
+# (white), and $o-success/$o-info/$o-warning/$o-danger — all verified
+# against web/static/src/scss/primary_variables.scss in Odoo 19 core.
+# None of these depend on any other themed value, so — unlike the list
+# view colors below — they are safe to always resolve to a fixed
+# fallback constant, exactly like color_primary/color_navbar_bg above.
+DEFAULT_COLOR_TEXT_BODY = "#212529"
+DEFAULT_COLOR_VIEW_BACKGROUND = "#ffffff"
+DEFAULT_COLOR_SUCCESS = "#28a745"
+DEFAULT_COLOR_INFO = "#17a2b8"
+DEFAULT_COLOR_WARNING = "#ffac00"
+DEFAULT_COLOR_DANGER = "#dc3545"
 DEFAULT_FONT_FAMILY = "sans-serif"
 # Matches the `sidebar_default` field's own default ("expanded"), applied
 # whenever there is no active theme. Any value that is not exactly
@@ -58,6 +78,35 @@ SCSS_ASSET_TARGET_PATH = (
 SCSS_ASSET_CUSTOM_URL = (
     "/ssi_backend_theme/dynamic/backend_theme_primary_variables.scss"
 )
+
+# color_text_body/color_view_background/color_success/color_info/
+# color_warning/color_danger map onto real Sass variables
+# ($o-main-text-color, $o-view-background-color, $o-success, $o-info,
+# $o-warning, $o-danger — all verified in Odoo 19's own
+# primary_variables.scss/bootstrap_overridden.scss), so they are baked
+# into the same regenerated SCSS file as color_primary/color_navbar_bg
+# above (see `_get_active_theme_primary_variables_scss()`).
+#
+# color_list_header_bg/color_list_row_hover_bg have NO equivalent Sass
+# variable in core — the list renderer only exposes CSS custom
+# properties (web/static/src/views/list/list_renderer.scss:
+# --ListRenderer-thead-bg-color; no core property exists at all for
+# row hover, so static/src/scss/backend_theme_list_view.scss defines
+# its own --ListRenderer-data-row-hover-bg). Both are therefore applied
+# the same way as color_navbar_text/font_family: the OWL service
+# (static/src/js/backend_theme_service.esm.js) sets a `--ssi-list-*`
+# bridge custom property on the document root only when the field has
+# a value, and that SCSS file reads it with a `var(..., <default>)`
+# fallback — never a literal assignment on `:root`, since core's own
+# `.o_list_renderer { --ListRenderer-thead-bg-color: ...; }` rule would
+# otherwise always shadow a `:root`-level value regardless of
+# specificity (a rule that directly targets a descendant element
+# always wins over an inherited ancestor value). Crucially, leaving
+# color_list_row_hover_bg empty must keep following the *current*
+# Primary Color dynamically (`rgba($primary, 0.06)`, itself already
+# theme-aware) rather than a fixed constant, which is why — unlike
+# every other color field above — these two are never resolved with an
+# "or DEFAULT_..." fallback in `_get_backend_theme_session_values()`.
 
 
 class BackendTheme(models.Model):
@@ -92,6 +141,50 @@ class BackendTheme(models.Model):
         help="Hex CSS color (#rgb or #rrggbb) used as the top navigation "
         "bar text color. Leave empty to use the default color.",
     )
+    color_text_body = fields.Char(
+        string="Body Text Color",
+        help="Hex CSS color (#rgb or #rrggbb) used as the main text "
+        "color across the backend UI. Leave empty to use the default "
+        "color.",
+    )
+    color_view_background = fields.Char(
+        string="View Background Color",
+        help="Hex CSS color (#rgb or #rrggbb) used as the background "
+        "color of the backend content area (forms, cards, dialogs). "
+        "Leave empty to use the default color.",
+    )
+    color_success = fields.Char(
+        string="Success Color",
+        help="Hex CSS color (#rgb or #rrggbb) used for success badges, "
+        "alerts, and decorations. Leave empty to use the default color.",
+    )
+    color_info = fields.Char(
+        string="Info Color",
+        help="Hex CSS color (#rgb or #rrggbb) used for info badges, "
+        "alerts, and decorations. Leave empty to use the default color.",
+    )
+    color_warning = fields.Char(
+        string="Warning Color",
+        help="Hex CSS color (#rgb or #rrggbb) used for warning badges, "
+        "alerts, and decorations. Leave empty to use the default color.",
+    )
+    color_danger = fields.Char(
+        string="Danger Color",
+        help="Hex CSS color (#rgb or #rrggbb) used for danger badges, "
+        "alerts, and decorations. Leave empty to use the default color.",
+    )
+    color_list_header_bg = fields.Char(
+        string="List Header Background Color",
+        help="Hex CSS color (#rgb or #rrggbb) used as the background "
+        "color of a list view's header row. Leave empty to use the "
+        "default color.",
+    )
+    color_list_row_hover_bg = fields.Char(
+        string="List Row Hover Background Color",
+        help="Hex CSS color (#rgb or #rrggbb) used as the background "
+        "color of a list view's data row when hovered. Leave empty to "
+        "use the default color, which follows the Primary Color.",
+    )
     font_family = fields.Char(
         help="CSS font-family value applied to the backend UI. Leave "
         "empty to use the default font.",
@@ -124,7 +217,7 @@ class BackendTheme(models.Model):
         "reserved for a future dark mode feature.",
     )
 
-    @api.constrains("color_primary", "color_navbar_bg", "color_navbar_text")
+    @api.constrains(*COLOR_FIELD_NAMES)
     def _check_color_hex_format(self):
         for record in self.sudo():
             for field_name in COLOR_FIELD_NAMES:
@@ -187,6 +280,18 @@ class BackendTheme(models.Model):
             "color_primary": theme.color_primary or DEFAULT_COLOR_PRIMARY,
             "color_navbar_bg": theme.color_navbar_bg or DEFAULT_COLOR_NAVBAR_BG,
             "color_navbar_text": theme.color_navbar_text or DEFAULT_COLOR_NAVBAR_TEXT,
+            "color_text_body": theme.color_text_body or DEFAULT_COLOR_TEXT_BODY,
+            "color_view_background": (
+                theme.color_view_background or DEFAULT_COLOR_VIEW_BACKGROUND
+            ),
+            "color_success": theme.color_success or DEFAULT_COLOR_SUCCESS,
+            "color_info": theme.color_info or DEFAULT_COLOR_INFO,
+            "color_warning": theme.color_warning or DEFAULT_COLOR_WARNING,
+            "color_danger": theme.color_danger or DEFAULT_COLOR_DANGER,
+            # Intentionally NOT resolved with an "or DEFAULT_..." fallback
+            # — see the comment above `SCSS_ASSET_CUSTOM_URL` for why.
+            "color_list_header_bg": theme.color_list_header_bg or False,
+            "color_list_row_hover_bg": theme.color_list_row_hover_bg or False,
             "font_family": theme.font_family or DEFAULT_FONT_FAMILY,
             "sidebar_default": theme.sidebar_default or DEFAULT_SIDEBAR_STATE,
         }
@@ -206,6 +311,13 @@ class BackendTheme(models.Model):
             "the active theme changes.\n"
             f"$o-brand-odoo: {values['color_navbar_bg']} !default;\n"
             f"$o-brand-primary: {values['color_primary']} !default;\n"
+            f"$o-main-text-color: {values['color_text_body']} !default;\n"
+            f"$o-view-background-color: "
+            f"{values['color_view_background']} !default;\n"
+            f"$o-success: {values['color_success']} !default;\n"
+            f"$o-info: {values['color_info']} !default;\n"
+            f"$o-warning: {values['color_warning']} !default;\n"
+            f"$o-danger: {values['color_danger']} !default;\n"
         )
 
     @api.model
@@ -296,7 +408,30 @@ class BackendTheme(models.Model):
     def write(self, vals):
         affected_ids = set(self.ids)
         result = super().write(vals)
-        relevant_fields = {"color_primary", "color_navbar_bg", "active"}
+        # Every color field introduced by this module is included here,
+        # regardless of whether it feeds the regenerated SCSS file
+        # directly (color_text_body, color_view_background,
+        # color_success/info/warning/danger) or the list view's
+        # `--ssi-list-*` bridge custom properties (color_list_header_bg,
+        # color_list_row_hover_bg) — an unlisted field would be stored
+        # but silently never applied. `color_navbar_text` and
+        # `font_family` are the only color/typography fields excluded:
+        # they are read fresh from `session_info()` on every
+        # session/page load instead of being baked into a compiled
+        # asset, so no resync is needed for them.
+        relevant_fields = {
+            "color_primary",
+            "color_navbar_bg",
+            "color_text_body",
+            "color_view_background",
+            "color_success",
+            "color_info",
+            "color_warning",
+            "color_danger",
+            "color_list_header_bg",
+            "color_list_row_hover_bg",
+            "active",
+        }
         active_theme_id = self._get_raw_active_theme_id()
         if (
             relevant_fields.intersection(vals)
