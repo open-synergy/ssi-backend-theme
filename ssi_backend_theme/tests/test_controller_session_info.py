@@ -2,9 +2,7 @@
 # Copyright 2026 PT. Simetri Sinergi Indonesia
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo_yaml_test import YamlTransactionCase
-
-from odoo.tests import tagged
+from odoo.tests import HttpCase, tagged
 
 from ..models.backend_theme import (
     CONFIG_PARAM_ACTIVE_THEME_ID,
@@ -16,23 +14,28 @@ from ..models.backend_theme import (
 
 
 @tagged("post_install", "-at_install")
-class TestIrHttpSessionInfo(YamlTransactionCase):
-    """Python murni — pemicu P1 (L-01/L-02).
+class TestControllerSessionInfo(HttpCase):
+    """Python murni — pemicu P7 (L-19: base class terkunci `TransactionCase`).
 
-    `session_info()` is a plain method on the abstract model `ir.http`
-    (no backing table), so its returned dict cannot be populated onto
-    any record and therefore cannot be reached by YAML `assert`
-    (dotted-getattr on a registry record). Every case below is an
-    assertion on that method's return value, not on a record's field
-    state, so it does not qualify for the YAML DSL at all (`case.py`
-    L-01/L-02: `action: call` discards return values and `assert`
-    always targets a record in the registry).
+    `ir.http.session_info()` reads `request.session`/`request.httprequest`
+    (see `addons/web/models/ir_http.py`), which is only bound during a
+    real HTTP request. Calling it from a plain `TransactionCase` (which
+    `YamlTransactionCase`/YAML scenarios are built on) raises
+    `RuntimeError: object unbound`, so this can only be tested through
+    an actual HTTP round-trip via `HttpCase`, hitting the core route
+    `/web/session/get_session_info` (`addons/web/controllers/session.py`)
+    that calls `session_info()` for real.
     """
 
     def _set_active_theme_param(self, theme_id):
         self.env["ir.config_parameter"].sudo().set_param(
             CONFIG_PARAM_ACTIVE_THEME_ID, theme_id or ""
         )
+
+    def _get_backend_theme_session_info(self):
+        self.authenticate("admin", "admin")
+        result = self.make_jsonrpc_request("/web/session/get_session_info")
+        return result["backend_theme"]
 
     def test_session_info_active_theme(self):
         theme = self.env["backend_theme"].create(
@@ -47,7 +50,7 @@ class TestIrHttpSessionInfo(YamlTransactionCase):
         )
         self._set_active_theme_param(theme.id)
 
-        backend_theme = self.env["ir.http"].session_info()["backend_theme"]
+        backend_theme = self._get_backend_theme_session_info()
 
         self.assertEqual(backend_theme["id"], theme.id)
         self.assertEqual(backend_theme["color_primary"], "#123456")
@@ -58,7 +61,7 @@ class TestIrHttpSessionInfo(YamlTransactionCase):
     def test_session_info_no_theme_configured_uses_defaults(self):
         self._set_active_theme_param(None)
 
-        backend_theme = self.env["ir.http"].session_info()["backend_theme"]
+        backend_theme = self._get_backend_theme_session_info()
 
         self.assertFalse(backend_theme["id"])
         self.assertEqual(backend_theme["color_primary"], DEFAULT_COLOR_PRIMARY)
@@ -77,7 +80,7 @@ class TestIrHttpSessionInfo(YamlTransactionCase):
         self._set_active_theme_param(theme.id)
         theme.unlink()
 
-        backend_theme = self.env["ir.http"].session_info()["backend_theme"]
+        backend_theme = self._get_backend_theme_session_info()
 
         self.assertFalse(backend_theme["id"])
         self.assertEqual(backend_theme["color_primary"], DEFAULT_COLOR_PRIMARY)
@@ -89,7 +92,7 @@ class TestIrHttpSessionInfo(YamlTransactionCase):
         self._set_active_theme_param(theme.id)
         theme.active = False
 
-        backend_theme = self.env["ir.http"].session_info()["backend_theme"]
+        backend_theme = self._get_backend_theme_session_info()
 
         self.assertFalse(backend_theme["id"])
         self.assertEqual(backend_theme["color_primary"], DEFAULT_COLOR_PRIMARY)

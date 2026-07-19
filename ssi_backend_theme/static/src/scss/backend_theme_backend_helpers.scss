@@ -13,5 +13,5 @@
 // OWL service. $border-radius has no corresponding `backend_theme`
 // field yet; it is re-declared here at Odoo's own default only so the
 // override point exists and is wired correctly for a future field.
-$border-radius: .25rem !default;
+$border-radius: 0.25rem !default;
 $font-family-sans-serif: var(--ssi-font-family, sans-serif) !default;

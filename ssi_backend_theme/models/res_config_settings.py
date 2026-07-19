@@ -34,8 +34,9 @@ class ResConfigSettings(models.TransientModel):
         return res
 
     def set_values(self):
-        super().set_values()
+        result = super().set_values()
         self.env["ir.config_parameter"].sudo().set_param(
             CONFIG_PARAM_ACTIVE_THEME_ID,
             self.backend_theme_active_id.id or "",
         )
+        return result
