@@ -86,6 +86,21 @@
                             <field name="font_family" />
                             <field name="font_size_base" />
                         </group>
+                        <group name="typography_group_2" string="Spacing">
+                            <field name="paragraph_spacing" />
+                            <field name="form_spacing" />
+                        </group>
+                    </page>
+                    <page name="navbar" string="Navbar">
+                        <group name="navbar_group_1" string="Navbar Sizing">
+                            <field name="navbar_height" />
+                            <field name="navbar_font_size" />
+                        </group>
+                        <group name="navbar_group_2" string="Navbar Entry Spacing">
+                            <field name="navbar_entry_padding_h" />
+                            <field name="navbar_entry_margin_h" />
+                            <field name="navbar_entry_border_radius" />
+                        </group>
                     </page>
                     <page name="defaults" string="Defaults">
                         <group name="defaults_group_1" string="Layout Defaults">

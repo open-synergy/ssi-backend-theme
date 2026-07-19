@@ -9,6 +9,10 @@ from odoo.exceptions import ValidationError
 
 HEX_COLOR_RE = re.compile(r"^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$")
 
+# A bare "0" (unitless, valid CSS for a zero length) or a number
+# followed by one of the CSS units this module supports.
+CSS_LENGTH_RE = re.compile(r"^(0|[0-9]+(\.[0-9]+)?(px|rem|em|%))$")
+
 COLOR_FIELD_NAMES = (
     "color_primary",
     "color_navbar_bg",
@@ -22,6 +26,43 @@ COLOR_FIELD_NAMES = (
     "color_list_header_bg",
     "color_list_row_hover_bg",
 )
+
+# These are sizing/spacing fields, NOT colors: validated by
+# `CSS_LENGTH_RE`, never by `HEX_COLOR_RE`, and deliberately excluded
+# from `COLOR_FIELD_NAMES` above so the hex-format constraint never
+# runs against them.
+NAVBAR_SPACING_FIELD_NAMES = (
+    "navbar_height",
+    "navbar_font_size",
+    "navbar_entry_padding_h",
+    "navbar_entry_margin_h",
+    "navbar_entry_border_radius",
+    "paragraph_spacing",
+    "form_spacing",
+)
+
+# Maps each navbar/spacing field to the Odoo 19 Sass variable it
+# overrides, verified directly against core source:
+# - $o-navbar-height / $o-navbar-font-size / $o-navbar-entry-padding-h /
+#   $o-navbar-entry-margin-h / $o-navbar-entry-border-radius:
+#   web/static/src/webclient/navbar/navbar.variables.scss
+# - $o-form-spacing-unit: web/static/src/scss/primary_variables.scss
+# - $paragraph-margin-bottom: web/static/lib/bootstrap/scss/_variables.scss
+#   (Bootstrap's own variable — still safe to override here: it is
+#   loaded, via 'web._assets_bootstrap_backend'/plain bundle entries,
+#   AFTER 'web._assets_primary_variables' — the bundle this module
+#   prepends its regenerated file into — inside `web.assets_backend`,
+#   so our `!default` assignment still wins the same way
+#   $o-brand-odoo/$o-brand-primary already do).
+NAVBAR_SPACING_SCSS_VARIABLES = {
+    "navbar_height": "$o-navbar-height",
+    "navbar_font_size": "$o-navbar-font-size",
+    "navbar_entry_padding_h": "$o-navbar-entry-padding-h",
+    "navbar_entry_margin_h": "$o-navbar-entry-margin-h",
+    "navbar_entry_border_radius": "$o-navbar-entry-border-radius",
+    "paragraph_spacing": "$paragraph-margin-bottom",
+    "form_spacing": "$o-form-spacing-unit",
+}
 
 # ir.config_parameter key holding the id of the active backend_theme
 # record. Intentionally a single pointer (not a boolean `is_active` on
@@ -194,6 +235,43 @@ class BackendTheme(models.Model):
         help="CSS base font-size value (e.g. '14px') applied to the "
         "backend UI. Leave empty to use the default size.",
     )
+    navbar_height = fields.Char(
+        help="CSS length (px, rem, em, %, or a bare 0) for the top "
+        'navigation bar height. Matches Odoo\'s own default of "46px". '
+        "Leave empty to use the default height.",
+    )
+    navbar_font_size = fields.Char(
+        help="CSS length (px, rem, em, %, or a bare 0) for the top "
+        "navigation bar font size. Matches Odoo's own default of "
+        '"1rem". Leave empty to use the default size.',
+    )
+    navbar_entry_padding_h = fields.Char(
+        string="Navbar Entry Horizontal Padding",
+        help="CSS length (px, rem, em, %, or a bare 0) for the "
+        "horizontal padding of each navbar entry. Matches Odoo's own "
+        'default of "0.63em". Leave empty to use the default padding.',
+    )
+    navbar_entry_margin_h = fields.Char(
+        string="Navbar Entry Horizontal Margin",
+        help="CSS length (px, rem, em, %, or a bare 0) for the "
+        "horizontal margin of each navbar entry. Matches Odoo's own "
+        'default of "0". Leave empty to use the default margin.',
+    )
+    navbar_entry_border_radius = fields.Char(
+        help="CSS length (px, rem, em, %, or a bare 0) for the corner "
+        "radius of each navbar entry. Matches Odoo's own default of "
+        '"0". Leave empty to use the default radius.',
+    )
+    paragraph_spacing = fields.Char(
+        help="CSS length (px, rem, em, %, or a bare 0) for the space "
+        "below a paragraph of backend text. Leave empty to use the "
+        "default spacing.",
+    )
+    form_spacing = fields.Char(
+        help="CSS length (px, rem, em, %, or a bare 0) for the "
+        "density between fields on a form view. Leave empty to use "
+        "the default spacing.",
+    )
     sidebar_default = fields.Selection(
         string="Default Sidebar State",
         selection=[
@@ -238,6 +316,29 @@ class BackendTheme(models.Model):
         if not value:
             return True
         return bool(HEX_COLOR_RE.match(value))
+
+    @api.constrains(*NAVBAR_SPACING_FIELD_NAMES)
+    def _check_css_length_format(self):
+        for record in self.sudo():
+            for field_name in NAVBAR_SPACING_FIELD_NAMES:
+                if not record._check_css_length_format_condition(field_name):
+                    error_message = f"""
+                    Document Type: {record._description.lower()}
+                    Context: Create or update document
+                    Database ID: {record.id}
+                    Problem: Invalid CSS length value on field "{field_name}"
+                    Solution: Use a valid CSS length (a number followed by
+                    px/rem/em/%, or a bare 0), or leave the field empty to
+                    use the default value
+                    """
+                    raise ValidationError(record.env._(error_message))
+
+    def _check_css_length_format_condition(self, field_name):
+        self.ensure_one()
+        value = getattr(self, field_name)
+        if not value:
+            return True
+        return bool(CSS_LENGTH_RE.match(value))
 
     @api.model
     def _get_active_theme(self):
@@ -302,9 +403,18 @@ class BackendTheme(models.Model):
 
         Always produces valid, literal Sass colors (never ``var()``) —
         see the module-level comment above ``SCSS_ASSET_BUNDLE`` for why.
+
+        Navbar/spacing fields (``NAVBAR_SPACING_FIELD_NAMES``) are
+        appended below with the opposite fallback rule from the color
+        fields above: a blank field is skipped entirely — never
+        resolved with a Python fallback constant — so core's own
+        ``!default`` declaration (navbar.variables.scss/
+        primary_variables.scss/Bootstrap's ``_variables.scss``) applies
+        exactly as if this module were not installed.
         """
+        theme = self._get_active_theme()
         values = self._get_backend_theme_session_values()
-        return (
+        content = (
             "// Auto-generated by ssi_backend_theme. Do not edit "
             "manually — regenerated by\n"
             "// backend_theme._sync_active_theme_scss_asset() whenever "
@@ -319,6 +429,11 @@ class BackendTheme(models.Model):
             f"$o-warning: {values['color_warning']} !default;\n"
             f"$o-danger: {values['color_danger']} !default;\n"
         )
+        for field_name, scss_variable in NAVBAR_SPACING_SCSS_VARIABLES.items():
+            value = theme[field_name]
+            if value:
+                content += f"{scss_variable}: {value} !default;\n"
+        return content
 
     @api.model
     def _sync_active_theme_scss_asset(self):
@@ -418,7 +533,10 @@ class BackendTheme(models.Model):
         # `font_family` are the only color/typography fields excluded:
         # they are read fresh from `session_info()` on every
         # session/page load instead of being baked into a compiled
-        # asset, so no resync is needed for them.
+        # asset, so no resync is needed for them. All seven
+        # `NAVBAR_SPACING_FIELD_NAMES` fields (issue #15) also feed the
+        # same regenerated SCSS file, so they are unioned in below —
+        # an unlisted one here would be stored but never applied either.
         relevant_fields = {
             "color_primary",
             "color_navbar_bg",
@@ -431,7 +549,7 @@ class BackendTheme(models.Model):
             "color_list_header_bg",
             "color_list_row_hover_bg",
             "active",
-        }
+        } | set(NAVBAR_SPACING_FIELD_NAMES)
         active_theme_id = self._get_raw_active_theme_id()
         if (
             relevant_fields.intersection(vals)

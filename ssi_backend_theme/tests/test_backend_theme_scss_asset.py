@@ -263,6 +263,112 @@ class TestBackendThemeScssAsset(YamlTransactionCase):
         content = self._get_generated_scss()
         self.assertIn(f"$o-success: {DEFAULT_COLOR_SUCCESS} !default;", content)
 
+    def test_sync_creates_asset_with_navbar_spacing_fields(self):
+        """issue #15: navbar/spacing fields must reach the regenerated
+        SCSS as the correct, verified Odoo 19 variable names.
+        """
+        theme = self.env["backend_theme"].create(
+            {
+                "name": "Navbar Sizing Theme",
+                "code": "SCSS017",
+                "navbar_height": "56px",
+                "navbar_font_size": "1.2rem",
+                "navbar_entry_padding_h": "1em",
+                "navbar_entry_margin_h": "4px",
+                "navbar_entry_border_radius": "4px",
+                "paragraph_spacing": "1.5rem",
+                "form_spacing": "8px",
+            }
+        )
+        self._set_active_theme_param(theme.id)
+        self.env["backend_theme"]._sync_active_theme_scss_asset()
+
+        content = self._get_generated_scss()
+        self.assertIn("$o-navbar-height: 56px !default;", content)
+        self.assertIn("$o-navbar-font-size: 1.2rem !default;", content)
+        self.assertIn("$o-navbar-entry-padding-h: 1em !default;", content)
+        self.assertIn("$o-navbar-entry-margin-h: 4px !default;", content)
+        self.assertIn("$o-navbar-entry-border-radius: 4px !default;", content)
+        self.assertIn("$paragraph-margin-bottom: 1.5rem !default;", content)
+        self.assertIn("$o-form-spacing-unit: 8px !default;", content)
+
+    def test_sync_omits_blank_navbar_spacing_fields(self):
+        """issue #15: a blank navbar/spacing field must be skipped
+        entirely from the regenerated SCSS — never resolved with a
+        fallback constant like the color fields — so core's own
+        ``!default`` applies unchanged.
+        """
+        theme = self.env["backend_theme"].create(
+            {"name": "No Navbar Setting Sync Theme", "code": "SCSS018"}
+        )
+        self._set_active_theme_param(theme.id)
+        self.env["backend_theme"]._sync_active_theme_scss_asset()
+
+        content = self._get_generated_scss()
+        self.assertNotIn("$o-navbar-height:", content)
+        self.assertNotIn("$o-navbar-font-size:", content)
+        self.assertNotIn("$o-navbar-entry-padding-h:", content)
+        self.assertNotIn("$o-navbar-entry-margin-h:", content)
+        self.assertNotIn("$o-navbar-entry-border-radius:", content)
+        self.assertNotIn("$paragraph-margin-bottom:", content)
+        self.assertNotIn("$o-form-spacing-unit:", content)
+
+    def test_write_active_theme_navbar_border_radius_resyncs(self):
+        """issue #15: writing navbar_entry_border_radius on the active
+        theme must resync the compiled asset, exactly like the color
+        fields already do — the field is required to be in `write()`'s
+        trigger set.
+        """
+        theme = self.env["backend_theme"].create(
+            {"name": "Navbar Radius Live Theme", "code": "SCSS019"}
+        )
+        self._set_active_theme_param(theme.id)
+        self.env["backend_theme"]._sync_active_theme_scss_asset()
+
+        theme.write({"navbar_entry_border_radius": "4px"})
+
+        content = self._get_generated_scss()
+        self.assertIn("$o-navbar-entry-border-radius: 4px !default;", content)
+
+    def test_write_form_spacing_on_non_active_theme_does_not_resync(self):
+        """issue #15: writing form_spacing on a theme that is NOT the
+        active one must leave the compiled asset untouched.
+        """
+        active_theme = self.env["backend_theme"].create(
+            {"name": "Still Active Navbar Theme", "code": "SCSS020"}
+        )
+        other_theme = self.env["backend_theme"].create(
+            {"name": "Not Active Navbar Theme", "code": "SCSS021"}
+        )
+        self._set_active_theme_param(active_theme.id)
+        self.env["backend_theme"]._sync_active_theme_scss_asset()
+
+        other_theme.write({"form_spacing": "8px"})
+
+        content = self._get_generated_scss()
+        self.assertNotIn("$o-form-spacing-unit:", content)
+
+    def test_clearing_navbar_height_resyncs_and_omits_the_line(self):
+        """issue #15: clearing a navbar/spacing field on the active
+        theme must resync the asset back to core's own default (by
+        omitting the line entirely), not leave the previous custom
+        value baked in.
+        """
+        theme = self.env["backend_theme"].create(
+            {
+                "name": "Navbar Height Clear Theme",
+                "code": "SCSS022",
+                "navbar_height": "56px",
+            }
+        )
+        self._set_active_theme_param(theme.id)
+        self.env["backend_theme"]._sync_active_theme_scss_asset()
+
+        theme.write({"navbar_height": False})
+
+        content = self._get_generated_scss()
+        self.assertNotIn("$o-navbar-height:", content)
+
     def test_active_theme_ignores_non_numeric_parameter(self):
         theme = self.env["backend_theme"].create(
             {
