@@ -50,6 +50,11 @@ msgid "Activity Type Icon"
 msgstr ""
 
 #. module: ssi_backend_theme
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__app_submenu_position
+msgid "App Submenu Position"
+msgstr ""
+
+#. module: ssi_backend_theme
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__message_attachment_count
 msgid "Attachment Count"
 msgstr ""
@@ -549,6 +554,7 @@ msgid "Name"
 msgstr ""
 
 #. module: ssi_backend_theme
+#: model:ir.model.fields.selection,name:ssi_backend_theme.selection__backend_theme__app_submenu_position__navbar
 #: model_terms:ir.ui.view,arch_db:ssi_backend_theme.backend_theme_view_form
 msgid "Navbar"
 msgstr ""
@@ -663,6 +669,11 @@ msgid "Paragraph Spacing"
 msgstr ""
 
 #. module: ssi_backend_theme
+#: model:ir.model.fields.selection,name:ssi_backend_theme.selection__backend_theme__app_submenu_position__popover
+msgid "Popover"
+msgstr ""
+
+#. module: ssi_backend_theme
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__color_primary
 msgid "Primary Color"
 msgstr ""
@@ -707,6 +718,11 @@ msgstr ""
 #. module: ssi_backend_theme
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__show_sidebar_recent
 msgid "Show Sidebar Recent"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields.selection,name:ssi_backend_theme.selection__backend_theme__app_submenu_position__sidebar
+msgid "Sidebar"
 msgstr ""
 
 #. module: ssi_backend_theme
@@ -802,4 +818,14 @@ msgstr ""
 #. module: ssi_backend_theme
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__color_warning
 msgid "Warning Color"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme__app_submenu_position
+msgid ""
+"Where the active app's submenu sections are shown: on the top horizontal "
+"navbar (Odoo's default), inline inside the sidebar under the active app, or "
+"as a popover on the active app's sidebar item. Sidebar and Popover both fall"
+" back to Navbar while the sidebar itself is hidden (see Show Sidebar below),"
+" and Sidebar behaves like Popover while the sidebar is collapsed."
 msgstr ""
