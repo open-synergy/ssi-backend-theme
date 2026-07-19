@@ -60,6 +60,11 @@ msgid "Attachment Count"
 msgstr ""
 
 #. module: ssi_backend_theme
+#: model:ir.model.fields.selection,name:ssi_backend_theme.selection__backend_theme__chatter_position__auto
+msgid "Auto"
+msgstr ""
+
+#. module: ssi_backend_theme
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_res_users__backend_theme_color_scheme
 msgid "Backend Color Scheme"
 msgstr ""
@@ -114,6 +119,11 @@ msgstr ""
 #. odoo-javascript
 #: code:addons/ssi_backend_theme/static/src/webclient/apps_sidebar/sidebar_footer.xml:0
 msgid "Bookmarks"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields.selection,name:ssi_backend_theme.selection__backend_theme__chatter_position__bottom
+msgid "Bottom"
 msgstr ""
 
 #. module: ssi_backend_theme
@@ -187,6 +197,24 @@ msgid ""
 "CSS length (px, rem, em, %, or a bare 0) for the top navigation bar height. "
 "Matches Odoo's own default of \"46px\". Leave empty to use the default "
 "height."
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model_terms:ir.ui.view,arch_db:ssi_backend_theme.backend_theme_view_form
+msgid "Chatter"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__chatter_position
+msgid "Chatter Position"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme__show_chatter_toggle
+msgid ""
+"Check to add a button on the chatter that lets the user fold and unfold it "
+"on a form view. The folded state is not saved anywhere; it always starts "
+"unfolded again the next time a form is opened."
 msgstr ""
 
 #. module: ssi_backend_theme
@@ -707,8 +735,18 @@ msgid "Responsible User"
 msgstr ""
 
 #. module: ssi_backend_theme
+#: model:ir.model.fields.selection,name:ssi_backend_theme.selection__backend_theme__chatter_position__right
+msgid "Right"
+msgstr ""
+
+#. module: ssi_backend_theme
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme_bookmark__sequence
 msgid "Sequence"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__show_chatter_toggle
+msgid "Show Chatter Toggle Button"
 msgstr ""
 
 #. module: ssi_backend_theme
@@ -847,4 +885,16 @@ msgid ""
 "as a popover on the active app's sidebar item. Sidebar and Popover both fall"
 " back to Navbar while the sidebar itself is hidden (see Show Sidebar below),"
 " and Sidebar behaves like Popover while the sidebar is collapsed."
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme__chatter_position
+msgid ""
+"Where the chatter (messages, activities, followers) is shown on a form view."
+" \"Auto\" keeps Odoo's own responsive behavior (a side column on very wide "
+"screens, below the form on narrower ones). \"Right\" always places the "
+"chatter in a side column on wide screens, and \"Bottom\" always places it "
+"below the form fields, spanning the full width. Both \"Right\" and "
+"\"Bottom\" are ignored on small screens, where the chatter keeps Odoo's own "
+"mobile layout."
 msgstr ""
