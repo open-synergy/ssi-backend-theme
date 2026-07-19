@@ -119,6 +119,9 @@
                             <field name="chatter_position" />
                             <field name="show_chatter_toggle" />
                         </group>
+                        <group name="defaults_group_4" string="Form View">
+                            <field name="enable_form_sheet_resize" />
+                        </group>
                     </page>
                 </xpath>
             </data>

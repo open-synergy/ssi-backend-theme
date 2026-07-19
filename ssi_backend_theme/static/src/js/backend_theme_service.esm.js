@@ -34,6 +34,18 @@ const CSS_VARIABLE_BY_THEME_KEY = {
 // property instead of inventing a new SCSS bridge for it.
 const NAVBAR_ENTRY_COLOR_VARIABLE = "--NavBar-entry-color";
 
+// Issue #20: bridges `enable_form_sheet_resize` to
+// backend_theme_form_view.scss's `var(--ssi-form-sheet-max-width,
+// $o-form-view-sheet-max-width)` fallback. Unlike
+// CSS_VARIABLE_BY_THEME_KEY above, the theme value itself (a boolean)
+// is never written verbatim into the property — "true" is not a valid
+// CSS <length> — so this is applied through its own explicit branch
+// instead of the generic loop: the property is only set (to the
+// sentinel "none", removing the cap entirely) when the toggle is on;
+// left unset otherwise, so the SCSS fallback applies exactly as if
+// this module were not installed.
+const FORM_SHEET_MAX_WIDTH_VARIABLE = "--ssi-form-sheet-max-width";
+
 export const backendThemeService = {
     start() {
         const theme = session.backend_theme || {};
@@ -50,6 +62,9 @@ export const backendThemeService = {
                 NAVBAR_ENTRY_COLOR_VARIABLE,
                 theme.color_navbar_text
             );
+        }
+        if (theme.enable_form_sheet_resize) {
+            root.style.setProperty(FORM_SHEET_MAX_WIDTH_VARIABLE, "none");
         }
     },
 };
