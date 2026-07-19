@@ -333,6 +333,11 @@ msgid "Form Spacing"
 msgstr ""
 
 #. module: ssi_backend_theme
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__group_apps_by_category
+msgid "Group Apps by Category"
+msgstr ""
+
+#. module: ssi_backend_theme
 #: model:ir.model,name:ssi_backend_theme.model_ir_http
 msgid "HTTP Routing"
 msgstr ""
@@ -657,6 +662,12 @@ msgid "Number of messages with delivery error"
 msgstr ""
 
 #. module: ssi_backend_theme
+#. odoo-javascript
+#: code:addons/ssi_backend_theme/static/src/webclient/apps_sidebar/apps_sidebar.esm.js:0
+msgid "Other"
+msgstr ""
+
+#. module: ssi_backend_theme
 #: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme_bookmark__user_id
 msgid ""
 "Owner of this bookmark. Only this user can see or manage it -- enforced by "
@@ -733,6 +744,14 @@ msgstr ""
 #. module: ssi_backend_theme
 #: model_terms:ir.ui.view,arch_db:ssi_backend_theme.backend_theme_view_form
 msgid "Spacing"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme__group_apps_by_category
+msgid ""
+"Split the sidebar's app list into titled sections by each app's module "
+"category, instead of one flat list. Apps with no resolvable category are "
+"grouped under \"Other\". Leave unchecked to keep the current flat list."
 msgstr ""
 
 #. module: ssi_backend_theme
