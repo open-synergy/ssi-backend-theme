@@ -71,6 +71,17 @@ msgid "Backend Theme"
 msgstr ""
 
 #. module: ssi_backend_theme
+#: model:ir.model,name:ssi_backend_theme.model_backend_theme_bookmark
+msgid "Backend Theme Sidebar Bookmark"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme_bookmark__action_url
+msgid ""
+"Backend path (e.g. '/odoo/res.partner/12') this bookmark opens when clicked."
+msgstr ""
+
+#. module: ssi_backend_theme
 #: model:ir.model.fields,help:ssi_backend_theme.field_res_config_settings__backend_theme_active_id
 #: model_terms:ir.ui.view,arch_db:ssi_backend_theme.res_config_settings_view_form
 msgid ""
@@ -81,6 +92,18 @@ msgstr ""
 #. module: ssi_backend_theme
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__font_size_base
 msgid "Base Font Size"
+msgstr ""
+
+#. module: ssi_backend_theme
+#. odoo-javascript
+#: code:addons/ssi_backend_theme/static/src/webclient/apps_sidebar/sidebar_footer.esm.js:0
+msgid "Bookmark this record"
+msgstr ""
+
+#. module: ssi_backend_theme
+#. odoo-javascript
+#: code:addons/ssi_backend_theme/static/src/webclient/apps_sidebar/sidebar_footer.xml:0
+msgid "Bookmarks"
 msgstr ""
 
 #. module: ssi_backend_theme
@@ -135,11 +158,13 @@ msgstr ""
 
 #. module: ssi_backend_theme
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__create_uid
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme_bookmark__create_uid
 msgid "Created by"
 msgstr ""
 
 #. module: ssi_backend_theme
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__create_date
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme_bookmark__create_date
 msgid "Created on"
 msgstr ""
 
@@ -182,7 +207,15 @@ msgid "Defaults"
 msgstr ""
 
 #. module: ssi_backend_theme
+#: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme_bookmark__sequence
+msgid ""
+"Determines the display order of bookmarks in the sidebar panel, ascending, "
+"then by name."
+msgstr ""
+
+#. module: ssi_backend_theme
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__display_name
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme_bookmark__display_name
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_ir_http__display_name
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_res_config_settings__display_name
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_res_users__display_name
@@ -258,6 +291,7 @@ msgstr ""
 
 #. module: ssi_backend_theme
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__id
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme_bookmark__id
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_ir_http__id
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_res_config_settings__id
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_res_users__id
@@ -290,12 +324,19 @@ msgid "Is Follower"
 msgstr ""
 
 #. module: ssi_backend_theme
+#: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme_bookmark__name
+msgid "Label shown for this bookmark in the sidebar's BOOKMARKS panel."
+msgstr ""
+
+#. module: ssi_backend_theme
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__write_uid
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme_bookmark__write_uid
 msgid "Last Updated by"
 msgstr ""
 
 #. module: ssi_backend_theme
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__write_date
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme_bookmark__write_date
 msgid "Last Updated on"
 msgstr ""
 
@@ -357,6 +398,7 @@ msgstr ""
 
 #. module: ssi_backend_theme
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__name
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme_bookmark__name
 msgid "Name"
 msgstr ""
 
@@ -386,6 +428,18 @@ msgid "Next Activity Type"
 msgstr ""
 
 #. module: ssi_backend_theme
+#. odoo-javascript
+#: code:addons/ssi_backend_theme/static/src/webclient/apps_sidebar/sidebar_footer.xml:0
+msgid "No bookmarks yet"
+msgstr ""
+
+#. module: ssi_backend_theme
+#. odoo-javascript
+#: code:addons/ssi_backend_theme/static/src/webclient/apps_sidebar/sidebar_footer.xml:0
+msgid "No recently opened records"
+msgstr ""
+
+#. module: ssi_backend_theme
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__note
 msgid "Note"
 msgstr ""
@@ -411,13 +465,37 @@ msgid "Number of messages with delivery error"
 msgstr ""
 
 #. module: ssi_backend_theme
+#: model:ir.model.fields,help:ssi_backend_theme.field_backend_theme_bookmark__user_id
+msgid ""
+"Owner of this bookmark. Only this user can see or manage it -- enforced by "
+"the record rule, not by any group."
+msgstr ""
+
+#. module: ssi_backend_theme
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__color_primary
 msgid "Primary Color"
 msgstr ""
 
 #. module: ssi_backend_theme
+#. odoo-javascript
+#: code:addons/ssi_backend_theme/static/src/webclient/apps_sidebar/sidebar_footer.xml:0
+msgid "Recent"
+msgstr ""
+
+#. module: ssi_backend_theme
+#. odoo-javascript
+#: code:addons/ssi_backend_theme/static/src/webclient/apps_sidebar/sidebar_footer.xml:0
+msgid "Remove bookmark"
+msgstr ""
+
+#. module: ssi_backend_theme
 #: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme__activity_user_id
 msgid "Responsible User"
+msgstr ""
+
+#. module: ssi_backend_theme
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme_bookmark__sequence
+msgid "Sequence"
 msgstr ""
 
 #. module: ssi_backend_theme
@@ -452,6 +530,12 @@ msgid "Typography"
 msgstr ""
 
 #. module: ssi_backend_theme
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme_bookmark__action_url
+msgid "URL"
+msgstr ""
+
+#. module: ssi_backend_theme
 #: model:ir.model,name:ssi_backend_theme.model_res_users
+#: model:ir.model.fields,field_description:ssi_backend_theme.field_backend_theme_bookmark__user_id
 msgid "User"
 msgstr ""
