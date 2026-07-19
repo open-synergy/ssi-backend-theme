@@ -60,7 +60,7 @@ function writeStoredItems(items) {
  * module's own click handling (sidebar_footer.esm.js) and a plain
  * middle-click/new-tab open resolve the same way.
  *
- * @param {object} controller `action` service's `currentController`
+ * @param {Object} controller `action` service's `currentController`
  * @returns {{name: string, url: string}|undefined}
  */
 export function getControllerRecordEntry(controller) {
@@ -89,10 +89,10 @@ export const recentItemsService = {
             if (!entry) {
                 return;
             }
-            const next = [entry, ...items.filter((item) => item.url !== entry.url)].slice(
-                0,
-                RECENT_ITEMS_LIMIT
-            );
+            const next = [
+                entry,
+                ...items.filter((item) => item.url !== entry.url),
+            ].slice(0, RECENT_ITEMS_LIMIT);
             items.splice(0, items.length, ...next);
             writeStoredItems(items);
         }
@@ -101,7 +101,8 @@ export const recentItemsService = {
 
         return {
             items,
-            getCurrentRecordEntry: () => getControllerRecordEntry(action.currentController),
+            getCurrentRecordEntry: () =>
+                getControllerRecordEntry(action.currentController),
         };
     },
 };

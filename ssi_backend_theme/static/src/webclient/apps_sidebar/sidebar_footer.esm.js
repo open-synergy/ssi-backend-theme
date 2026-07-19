@@ -20,7 +20,7 @@ export const TAB_BOOKMARKS = "bookmarks";
  * content, an old/unknown value) is treated as `TAB_RECENT` -- never
  * raises client-side.
  *
- * @returns {string}
+ * @returns {String}
  */
 function getInitialTab() {
     const stored = browser.localStorage.getItem(SIDEBAR_FOOTER_TAB_STORAGE_KEY);
@@ -56,10 +56,11 @@ export class SidebarFooter extends Component {
         // The record rule (security/ir_rule/backend_theme_bookmark.xml)
         // already restricts results to the current user's own bookmarks;
         // no extra domain needed here.
-        this.state.bookmarks = await this.orm.searchRead("backend_theme_bookmark", [], [
-            "name",
-            "action_url",
-        ]);
+        this.state.bookmarks = await this.orm.searchRead(
+            "backend_theme_bookmark",
+            [],
+            ["name", "action_url"]
+        );
     }
 
     get isRecentTab() {

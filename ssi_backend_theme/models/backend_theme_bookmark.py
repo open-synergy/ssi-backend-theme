@@ -33,10 +33,8 @@ class BackendThemeBookmark(models.Model):
         "it -- enforced by the record rule, not by any group.",
     )
     name = fields.Char(
-        string="Name",
         required=True,
-        help="Label shown for this bookmark in the sidebar's BOOKMARKS "
-        "panel.",
+        help="Label shown for this bookmark in the sidebar's BOOKMARKS panel.",
     )
     action_url = fields.Char(
         string="URL",
@@ -45,7 +43,6 @@ class BackendThemeBookmark(models.Model):
         "opens when clicked.",
     )
     sequence = fields.Integer(
-        string="Sequence",
         default=10,
         help="Determines the display order of bookmarks in the sidebar "
         "panel, ascending, then by name.",

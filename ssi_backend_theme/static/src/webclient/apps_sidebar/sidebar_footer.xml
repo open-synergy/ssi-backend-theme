@@ -2,7 +2,9 @@
 <templates xml:space="preserve">
 
     <t t-name="ssi_backend_theme.SidebarFooter">
-        <div class="o_ssi_sidebar_footer d-flex flex-column flex-grow-1 overflow-hidden">
+        <div
+            class="o_ssi_sidebar_footer d-flex flex-column flex-grow-1 overflow-hidden"
+        >
             <div class="o_ssi_sidebar_footer_tabs d-flex flex-shrink-0" role="tablist">
                 <button
                     type="button"
@@ -25,7 +27,10 @@
                     Bookmarks
                 </button>
             </div>
-            <div class="o_ssi_sidebar_footer_body flex-grow-1 overflow-auto" role="tabpanel">
+            <div
+                class="o_ssi_sidebar_footer_body flex-grow-1 overflow-auto"
+                role="tabpanel"
+            >
                 <t t-if="isRecentTab">
                     <ul class="o_ssi_sidebar_footer_list list-unstyled mb-0">
                         <li
