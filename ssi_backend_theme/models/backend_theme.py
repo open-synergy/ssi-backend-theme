@@ -112,6 +112,30 @@ DEFAULT_APP_SUBMENU_POSITION = "navbar"
 # anything, keep Odoo's own responsive chatter layout".
 DEFAULT_CHATTER_POSITION = "auto"
 
+# issue #20: Odoo 19 core already ships drag-to-resize list columns
+# unconditionally (web/static/src/views/list/column_width_hook.js's
+# `useMagicColumnWidths`, wired up by every non-embedded
+# `web.ListRenderer` — verified directly against that source, see the
+# comment posted on issue #20). There is no core switch to toggle, so
+# unlike `enable_form_sheet_resize` below, no matching
+# "enable_list_column_resize" field is defined here: it would be a
+# switch with no effect, which the issue's own design decision forbids.
+#
+# `enable_form_sheet_resize` widens `.o_form_sheet_bg`'s own
+# `$o-form-view-sheet-max-width` cap (web/static/src/views/form/
+# form_controller.scss/form.variables.scss). Unlike $o-brand-odoo/
+# $o-brand-primary above, this Sass variable feeds a plain CSS length,
+# not a Sass color function, so it CAN be bridged through a live CSS
+# custom property the same way font_family/color_list_header_bg/
+# color_list_row_hover_bg already are: the OWL service
+# (static/src/js/backend_theme_service.esm.js) only sets
+# `--ssi-form-sheet-max-width` on the document root when this field is
+# `True`; static/src/scss/backend_theme_form_view.scss reads it with a
+# `var(..., $o-form-view-sheet-max-width)` fallback, so an update never
+# changes an existing deployment's form width. Matches the field's own
+# default (`False`), applied whenever there is no active theme.
+DEFAULT_ENABLE_FORM_SHEET_RESIZE = False
+
 # $o-brand-odoo/$o-brand-primary cannot be bridged through a CSS custom
 # property like the rest of the active theme's values: Odoo core and
 # Bootstrap 5 both feed them through Sass color functions (darken() in
@@ -375,6 +399,13 @@ class BackendTheme(models.Model):
         "saved anywhere; it always starts unfolded again the next time "
         "a form is opened.",
     )
+    enable_form_sheet_resize = fields.Boolean(
+        default=False,
+        help="Check to let a form view's sheet grow past Odoo's own "
+        "default maximum width, using all the room its outer container "
+        "already allows. Ignored on small screens, where the sheet "
+        "already spans the available width on its own.",
+    )
 
     @api.constrains(*COLOR_FIELD_NAMES)
     def _check_color_hex_format(self):
@@ -580,6 +611,15 @@ class BackendTheme(models.Model):
             # `theme.show_chatter_toggle` (already False on an empty
             # recordset, but spelled out for the same reason as above).
             "show_chatter_toggle": theme.show_chatter_toggle if theme else False,
+            # Same rule again (issue #20): no active theme -> False,
+            # matching DEFAULT_ENABLE_FORM_SHEET_RESIZE and the field's
+            # own default, so an update never widens an existing
+            # deployment's form sheet on its own.
+            "enable_form_sheet_resize": (
+                theme.enable_form_sheet_resize
+                if theme
+                else DEFAULT_ENABLE_FORM_SHEET_RESIZE
+            ),
         }
 
     @api.model

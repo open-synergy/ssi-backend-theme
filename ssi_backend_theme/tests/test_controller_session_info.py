@@ -11,6 +11,7 @@ from ..models.backend_theme import (
     DEFAULT_COLOR_NAVBAR_BG,
     DEFAULT_COLOR_NAVBAR_TEXT,
     DEFAULT_COLOR_PRIMARY,
+    DEFAULT_ENABLE_FORM_SHEET_RESIZE,
     DEFAULT_FONT_FAMILY,
     DEFAULT_SIDEBAR_STATE,
 )
@@ -88,6 +89,12 @@ class TestControllerSessionInfo(HttpCase):
         self.assertEqual(backend_theme["chatter_position"], DEFAULT_CHATTER_POSITION)
         self.assertEqual(DEFAULT_CHATTER_POSITION, "auto")
         self.assertFalse(backend_theme["show_chatter_toggle"])
+        # Issue #20: no active theme -> enable_form_sheet_resize is False.
+        self.assertEqual(
+            backend_theme["enable_form_sheet_resize"],
+            DEFAULT_ENABLE_FORM_SHEET_RESIZE,
+        )
+        self.assertFalse(DEFAULT_ENABLE_FORM_SHEET_RESIZE)
 
     def test_session_info_active_theme_sidebar_hidden(self):
         theme = self.env["backend_theme"].create(
@@ -225,6 +232,20 @@ class TestControllerSessionInfo(HttpCase):
         backend_theme = self._get_backend_theme_session_info()
 
         self.assertTrue(backend_theme["show_chatter_toggle"])
+
+    def test_session_info_active_theme_enable_form_sheet_resize_true(self):
+        theme = self.env["backend_theme"].create(
+            {
+                "name": "Wide Sheet Theme",
+                "code": "IRH012",
+                "enable_form_sheet_resize": True,
+            }
+        )
+        self._set_active_theme_param(theme.id)
+
+        backend_theme = self._get_backend_theme_session_info()
+
+        self.assertTrue(backend_theme["enable_form_sheet_resize"])
 
     def test_session_info_deleted_theme_uses_defaults(self):
         theme = self.env["backend_theme"].create(

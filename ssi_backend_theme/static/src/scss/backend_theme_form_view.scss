@@ -42,3 +42,28 @@
 .o_web_client .o_breadcrumb .o_last_breadcrumb_item {
     color: $link-color;
 }
+
+// issue #20: `enable_form_sheet_resize` widens the sheet past core's
+// own default cap ($o-form-view-sheet-max-width, 1400px —
+// web/static/src/views/form/form.variables.scss/form_controller.scss)
+// by bridging through a CSS custom property instead of overriding the
+// Sass variable itself: unlike $o-brand-odoo/$o-brand-primary (see the
+// comment above `SCSS_ASSET_BUNDLE` in models/backend_theme.py), this
+// variable only ever feeds a plain CSS length, so a runtime `var()`
+// value is perfectly valid here. `--ssi-form-sheet-max-width` is set
+// on the document root by the OWL service
+// (static/src/js/backend_theme_service.esm.js) only while the toggle
+// is on (to the sentinel "none", removing the cap entirely); left
+// unset otherwise, so the fallback below reproduces core's own default
+// unchanged. Deliberately does NOT touch `.o_form_renderer`'s own,
+// larger `$o-form-renderer-max-width` cap (2600px) — that one already
+// bounds the sheet plus a side chatter column together, and widening
+// it further is not part of this toggle's scope.
+//
+// No extra small-viewport guard is needed: a bare `max-width` can only
+// ever shrink the sheet below the viewport's own width, never force it
+// wider, so this has no visible effect once the viewport itself is
+// already narrower than the default cap.
+.o_web_client .o_form_sheet_bg {
+    max-width: var(--ssi-form-sheet-max-width, #{$o-form-view-sheet-max-width});
+}

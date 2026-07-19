@@ -645,6 +645,45 @@ scenarios:
             type: "value"
             expected: "bottom"
 
+  - name:
+      "Create Backend Theme without mentioning enable_form_sheet_resize defaults to
+      False"
+    steps:
+      - step: "Create theme without mentioning enable_form_sheet_resize"
+        action: "create"
+        model: "backend_theme"
+        save_as: "theme"
+        values:
+          name: "Default Sheet Width Theme"
+          code: "THM025"
+
+      - step: "Assert enable_form_sheet_resize defaults to False"
+        action: "assert"
+        target: "theme"
+        asserts:
+          enable_form_sheet_resize:
+            type: "value"
+            expected: false
+
+  - name: "Create Backend Theme with enable_form_sheet_resize enabled"
+    steps:
+      - step: "Create theme with enable_form_sheet_resize set to True"
+        action: "create"
+        model: "backend_theme"
+        save_as: "theme"
+        values:
+          name: "Wide Sheet Theme"
+          code: "THM026"
+          enable_form_sheet_resize: true
+
+      - step: "Assert enable_form_sheet_resize stored as True"
+        action: "assert"
+        target: "theme"
+        asserts:
+          enable_form_sheet_resize:
+            type: "value"
+            expected: true
+
   - name: "Writing a wrong-length color_list_header_bg value is rejected"
     steps:
       - step: "Create theme with a valid color_list_header_bg"
