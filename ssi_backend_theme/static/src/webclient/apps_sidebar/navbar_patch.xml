@@ -16,6 +16,18 @@
         <xpath expr="//header[hasclass('o_navbar')]" position="before">
             <AppsSidebar t-if="!this.ui.isSmall and this.ssiShowAppsSidebar" />
         </xpath>
+        <!--
+            Issue #17: "Current App Sections" (the horizontal submenu) is
+            only shown here while the active theme's app_submenu_position
+            resolves to "navbar" — "sidebar" and "popover" both move it
+            into <AppsSidebar/> instead (apps_sidebar.xml), and it must
+            never render in both places at once.
+        -->
+        <xpath expr="//t[@t-call='web.NavBar.SectionsMenu']" position="attributes">
+            <attribute
+                name="t-if"
+            >currentAppSections.length and this.ssiShowNavbarSubmenu</attribute>
+        </xpath>
     </t>
 
 </templates>

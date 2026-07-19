@@ -3,6 +3,7 @@
 // License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import {AppsSidebar} from "./apps_sidebar.esm";
 import {NavBar} from "@web/webclient/navbar/navbar";
+import {getEffectiveAppSubmenuPosition} from "./app_submenu_position.esm";
 import {patch} from "@web/core/utils/patch";
 import {session} from "@web/session";
 
@@ -33,5 +34,19 @@ patch(NavBar.prototype, {
     get ssiShowAppsSidebar() {
         const backendTheme = session.backend_theme || {};
         return backendTheme.show_sidebar !== false;
+    },
+
+    /**
+     * Whether the core horizontal navbar should still render "Current App
+     * Sections" (issue #17): only when the active theme's effective
+     * `app_submenu_position` resolves to "navbar". "sidebar" and "popover"
+     * both move the submenu into `<AppsSidebar/>` instead (apps_sidebar.esm.js)
+     * and must never also render here, or the same submenu would show
+     * twice at once (navbar_patch.xml).
+     *
+     * @returns {Boolean}
+     */
+    get ssiShowNavbarSubmenu() {
+        return getEffectiveAppSubmenuPosition() === "navbar";
     },
 });

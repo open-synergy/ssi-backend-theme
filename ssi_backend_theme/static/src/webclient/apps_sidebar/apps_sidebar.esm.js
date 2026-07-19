@@ -2,10 +2,13 @@
 // Copyright 2026 PT. Simetri Sinergi Indonesia
 // License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 import {Component, onMounted, onWillStart, onWillUnmount, useState} from "@odoo/owl";
+import {AppSubmenuPopover} from "./app_submenu_popover.esm";
 import {SidebarFooter} from "./sidebar_footer.esm";
 import {_t} from "@web/core/l10n/translation";
 import {browser} from "@web/core/browser/browser";
+import {getEffectiveAppSubmenuPosition} from "./app_submenu_position.esm";
 import {session} from "@web/session";
+import {usePopover} from "@web/core/popover/popover_hook";
 import {useService} from "@web/core/utils/hooks";
 import {user} from "@web/core/user";
 
@@ -65,6 +68,9 @@ export class AppsSidebar extends Component {
     setup() {
         this.menuService = useService("menu");
         this.orm = useService("orm");
+        // Issue #17: renders the active app's sections as a popover
+        // anchored on its sidebar item, only ever opened from `onAppClick`.
+        this.submenuPopover = usePopover(AppSubmenuPopover, {position: "right"});
         // Active company id/name: already available client-side via the
         // `user` singleton (populated from `session.user_companies` at
         // webclient boot) — no extra RPC needed just to know *which*
@@ -176,6 +182,54 @@ export class AppsSidebar extends Component {
     }
 
     /**
+     * Flat list of the current app's own submenu sections (issue #17),
+     * same source `web.NavBar` itself reads for the horizontal navbar
+     * (`currentAppSections`, web/static/src/webclient/navbar/navbar.js) --
+     * the existing `menuService`, never a bespoke menu RPC.
+     *
+     * @returns {Array}
+     */
+    get currentAppSections() {
+        return (
+            (this.currentApp &&
+                this.menuService.getMenuAsTree(this.currentApp.id).childrenTree) ||
+            []
+        );
+    }
+
+    /**
+     * Effective submenu position for THIS component: starts from the
+     * active theme's resolved `app_submenu_position`
+     * (`getEffectiveAppSubmenuPosition()`, already accounting for
+     * `show_sidebar`), then additionally degrades "sidebar" to "popover"
+     * while the sidebar is collapsed -- an inline list does not fit the
+     * collapsed (icon-only) width, and a truncated list reads worse than
+     * a popover (Keputusan Desain, issue #17).
+     *
+     * @returns {("navbar"|"sidebar"|"popover")}
+     */
+    get appSubmenuPosition() {
+        const effective = getEffectiveAppSubmenuPosition();
+        if (effective === "sidebar" && this.state.collapsed) {
+            return "popover";
+        }
+        return effective;
+    }
+
+    /**
+     * Whether the inline "submenu inside the sidebar" block should render
+     * below the app list (issue #17): only in "sidebar" mode, and only
+     * when the current app actually has sections.
+     *
+     * @returns {Boolean}
+     */
+    get showInlineSubmenu() {
+        return (
+            this.appSubmenuPosition === "sidebar" && this.currentAppSections.length > 0
+        );
+    }
+
+    /**
      * Point `--o-ssi-apps-sidebar-current-width` at whichever of the two
      * width custom properties (apps_sidebar.scss, set on `:root`) matches
      * the current collapsed state.
@@ -210,7 +264,41 @@ export class AppsSidebar extends Component {
         this.updateCurrentWidthProperty();
     }
 
-    onAppClick(app) {
+    /**
+     * @param {Object} app
+     * @param {MouseEvent} ev
+     */
+    onAppClick(app, ev) {
+        // Issue #17: in "popover" mode, clicking the app that is ALREADY
+        // active opens/closes its sections popover instead of re-selecting
+        // it (which would just reload the same app). Any other app -- or
+        // any other mode -- keeps the existing navigate-to-app behavior.
+        if (
+            this.appSubmenuPosition === "popover" &&
+            this.isCurrentApp(app) &&
+            this.currentAppSections.length
+        ) {
+            if (this.submenuPopover.isOpen) {
+                this.submenuPopover.close();
+            } else {
+                this.submenuPopover.open(ev.currentTarget, {
+                    sections: this.currentAppSections,
+                });
+            }
+            return;
+        }
         this.menuService.selectMenu(app);
+    }
+
+    /**
+     * Handles a click on one entry of the inline "sidebar" submenu block
+     * (apps_sidebar.xml). The popover's own equivalent lives in
+     * app_submenu_popover.esm.js, since that component owns its own popover
+     * lifecycle (`props.close()`).
+     *
+     * @param {Object} section
+     */
+    onSectionClick(section) {
+        this.menuService.selectMenu(section);
     }
 }

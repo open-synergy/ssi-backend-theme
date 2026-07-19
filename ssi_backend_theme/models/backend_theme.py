@@ -97,6 +97,13 @@ DEFAULT_FONT_FAMILY = "sans-serif"
 # browser-side sidebar component as well — never an error client-side.
 DEFAULT_SIDEBAR_STATE = "expanded"
 
+# Matches the `app_submenu_position` field's own default ("navbar"),
+# applied whenever there is no active theme. Any value other than exactly
+# "sidebar" or "popover" (missing, unset, or any future/unexpected
+# selection value included) is treated as "navbar" by the browser-side
+# components as well — never an error client-side (issue #17).
+DEFAULT_APP_SUBMENU_POSITION = "navbar"
+
 # $o-brand-odoo/$o-brand-primary cannot be bridged through a CSS custom
 # property like the rest of the active theme's values: Odoo core and
 # Bootstrap 5 both feed them through Sass color functions (darken() in
@@ -294,6 +301,21 @@ class BackendTheme(models.Model):
         "applied. Not yet consumed by any feature in this module; "
         "reserved for a future dark mode feature.",
     )
+    app_submenu_position = fields.Selection(
+        selection=[
+            ("navbar", "Navbar"),
+            ("sidebar", "Sidebar"),
+            ("popover", "Popover"),
+        ],
+        default="navbar",
+        help="Where the active app's submenu sections are shown: on the "
+        "top horizontal navbar (Odoo's default), inline inside the "
+        "sidebar under the active app, or as a popover on the active "
+        "app's sidebar item. Sidebar and Popover both fall back to "
+        "Navbar while the sidebar itself is hidden (see Show Sidebar "
+        "below), and Sidebar behaves like Popover while the sidebar is "
+        "collapsed.",
+    )
     show_sidebar = fields.Boolean(
         default=True,
         help="Uncheck to hide the entire navigation sidebar and shift "
@@ -414,6 +436,9 @@ class BackendTheme(models.Model):
             "color_list_row_hover_bg": theme.color_list_row_hover_bg or False,
             "font_family": theme.font_family or DEFAULT_FONT_FAMILY,
             "sidebar_default": theme.sidebar_default or DEFAULT_SIDEBAR_STATE,
+            "app_submenu_position": (
+                theme.app_submenu_position or DEFAULT_APP_SUBMENU_POSITION
+            ),
             # Boolean fields default to `False` on an empty recordset, so
             # unlike every field above, an `or DEFAULT` fallback would
             # silently turn an intentional `False` on a real theme into

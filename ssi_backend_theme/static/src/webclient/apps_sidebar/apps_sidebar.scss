@@ -140,3 +140,19 @@ $o-ssi-apps-sidebar-logo-height: 64px !default;
     margin-right: 0.5rem;
     flex-shrink: 0;
 }
+
+// Inline "sidebar" submenu (issue #17): the current app's own sections,
+// rendered directly below the app list -- only while
+// `app_submenu_position` resolves to "sidebar" (apps_sidebar.xml).
+.o_ssi_apps_sidebar_sections {
+    font-size: 0.9em;
+
+    .o_ssi_apps_sidebar_section {
+        padding: 0.35rem 1rem;
+        cursor: pointer;
+
+        &:hover {
+            background-color: $o-navbar-entry-bg--hover;
+        }
+    }
+}
