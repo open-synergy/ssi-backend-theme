@@ -17,6 +17,7 @@
         "ssi_master_data_mixin",
         "web",
         "base_setup",
+        "mail",
     ],
     "data": [
         "security/ir_module_category/backend_theme.xml",
@@ -48,6 +49,7 @@
         "web.assets_backend": [
             "ssi_backend_theme/static/src/js/*",
             "ssi_backend_theme/static/src/webclient/apps_sidebar/*",
+            "ssi_backend_theme/static/src/webclient/chatter/*",
             "ssi_backend_theme/static/src/webclient/color_scheme/*",
             "ssi_backend_theme/static/src/scss/backend_theme_list_view.scss",
             "ssi_backend_theme/static/src/scss/backend_theme_form_view.scss",

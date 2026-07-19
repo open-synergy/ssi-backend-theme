@@ -104,6 +104,14 @@ DEFAULT_SIDEBAR_STATE = "expanded"
 # components as well — never an error client-side (issue #17).
 DEFAULT_APP_SUBMENU_POSITION = "navbar"
 
+# Matches the `chatter_position` field's own default ("auto"), applied
+# whenever there is no active theme. Any value other than exactly "right"
+# or "bottom" (missing, unset, or any future/unexpected selection value
+# included) is treated as "auto" by the browser-side patch as well — never
+# an error client-side (issue #19). "auto" itself means "do not patch
+# anything, keep Odoo's own responsive chatter layout".
+DEFAULT_CHATTER_POSITION = "auto"
+
 # $o-brand-odoo/$o-brand-primary cannot be bridged through a CSS custom
 # property like the rest of the active theme's values: Odoo core and
 # Bootstrap 5 both feed them through Sass color functions (darken() in
@@ -343,6 +351,30 @@ class BackendTheme(models.Model):
         'resolvable category are grouped under "Other". Leave unchecked '
         "to keep the current flat list.",
     )
+    chatter_position = fields.Selection(
+        selection=[
+            ("auto", "Auto"),
+            ("right", "Right"),
+            ("bottom", "Bottom"),
+        ],
+        default="auto",
+        help="Where the chatter (messages, activities, followers) is "
+        'shown on a form view. "Auto" keeps Odoo\'s own responsive '
+        "behavior (a side column on very wide screens, below the form "
+        'on narrower ones). "Right" always places the chatter in a side '
+        'column on wide screens, and "Bottom" always places it below '
+        'the form fields, spanning the full width. Both "Right" and '
+        '"Bottom" are ignored on small screens, where the chatter keeps '
+        "Odoo's own mobile layout.",
+    )
+    show_chatter_toggle = fields.Boolean(
+        string="Show Chatter Toggle Button",
+        default=False,
+        help="Check to add a button on the chatter that lets the user "
+        "fold and unfold it on a form view. The folded state is not "
+        "saved anywhere; it always starts unfolded again the next time "
+        "a form is opened.",
+    )
 
     @api.constrains(*COLOR_FIELD_NAMES)
     def _check_color_hex_format(self):
@@ -541,6 +573,13 @@ class BackendTheme(models.Model):
             "app_categories": (
                 self._get_app_module_categories() if group_apps_by_category else {}
             ),
+            "chatter_position": theme.chatter_position or DEFAULT_CHATTER_POSITION,
+            # Boolean, same rule as the show_sidebar_* fields above: an
+            # empty recordset (no active theme) must resolve to the
+            # field's own default (False), never inherit a stale
+            # `theme.show_chatter_toggle` (already False on an empty
+            # recordset, but spelled out for the same reason as above).
+            "show_chatter_toggle": theme.show_chatter_toggle if theme else False,
         }
 
     @api.model

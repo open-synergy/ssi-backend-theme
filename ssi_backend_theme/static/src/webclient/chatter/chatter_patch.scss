@@ -1,0 +1,43 @@
+// Copyright 2026 OpenSynergy Indonesia
+// Copyright 2026 PT. Simetri Sinergi Indonesia
+// License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
+// Issue #19: chatter fold/unfold toggle button, and the folded state
+// itself. Both classes are only ever added by chatter_patch.esm.js onto
+// the chatter's own wrapper (".o-mail-Form-chatter", set up by mail's own
+// form_compiler.js) -- never onto `mail.Chatter`'s internal markup, so
+// this never leaks into dialogs/kanban attachment previews that reuse
+// that same component outside a form view.
+.o-mail-Form-chatter {
+    position: relative;
+
+    .o_ssi_chatter_toggle {
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 1;
+    }
+
+    &.o_ssi_chatter_folded {
+        > .o-mail-Chatter {
+            display: none;
+        }
+
+        // Side layout ("right"/auto-XXL): collapse to a thin strip that
+        // still fits the toggle button, instead of the full chatter
+        // width.
+        &.o-aside {
+            width: 2.5rem;
+            min-width: 2.5rem;
+            flex-grow: 0;
+            padding: 0;
+        }
+
+        // Bottom layout ("bottom"/auto-below-XXL): collapse the band's
+        // height instead of its width.
+        &:not(.o-aside) {
+            min-height: 2.5rem;
+            padding-bottom: 0;
+        }
+    }
+}

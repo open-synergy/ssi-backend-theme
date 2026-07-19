@@ -593,6 +593,58 @@ scenarios:
             type: "value"
             expected: true
 
+  - name:
+      "Create Backend Theme without mentioning chatter fields defaults to auto and
+      toggle off"
+    steps:
+      - step: "Create theme without mentioning chatter_position/show_chatter_toggle"
+        action: "create"
+        model: "backend_theme"
+        save_as: "theme"
+        values:
+          name: "Default Chatter Theme"
+          code: "THM023"
+
+      - step:
+          "Assert chatter_position defaults to auto and show_chatter_toggle to False"
+        action: "assert"
+        target: "theme"
+        asserts:
+          chatter_position:
+            type: "value"
+            expected: "auto"
+          show_chatter_toggle:
+            type: "value"
+            expected: false
+
+  - name:
+      "Writing an invalid chatter_position value is rejected and keeps the old value"
+    steps:
+      - step: "Create theme with a valid bottom chatter_position"
+        action: "create"
+        model: "backend_theme"
+        save_as: "theme"
+        values:
+          name: "Chatter Position Write Theme"
+          code: "THM024"
+          chatter_position: "bottom"
+
+      - step: "Write a chatter_position value outside the selection must fail"
+        action: "write"
+        target: "theme"
+        expect_error:
+          type: "ValueError"
+        values:
+          chatter_position: "samping"
+
+      - step: "Assert the old chatter_position value is unchanged"
+        action: "assert"
+        target: "theme"
+        asserts:
+          chatter_position:
+            type: "value"
+            expected: "bottom"
+
   - name: "Writing a wrong-length color_list_header_bg value is rejected"
     steps:
       - step: "Create theme with a valid color_list_header_bg"
