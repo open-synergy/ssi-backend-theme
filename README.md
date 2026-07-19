@@ -21,7 +21,7 @@ Available addons
 ----------------
 addon | version | maintainers | summary
 --- | --- | --- | ---
-[ssi_backend_theme](ssi_backend_theme/) | 19.0.1.11.0 |  | Backend Theme
+[ssi_backend_theme](ssi_backend_theme/) | 19.0.1.12.0 |  | Backend Theme
 
 [//]: # (end addons)
 
