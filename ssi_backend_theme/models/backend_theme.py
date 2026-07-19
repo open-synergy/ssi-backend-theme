@@ -435,22 +435,25 @@ class BackendTheme(models.Model):
         for every app that resolves to a category; an app with no
         xmlid, no matching module, or a module with no category is
         simply absent from the result — callers treat a missing key the
-        same as "no category" (grouped under "Other").
+        same as "no category" (grouped under "Other"). Deliberately has
+        no early-return guard for an empty intermediate step (no apps /
+        no module names / no categorized module): each of those states
+        degrades to `{}` on its own through the same code path below —
+        an empty `search_read([("...", "in", [])])` domain simply
+        returns no rows — without a separate branch to test.
         """
         apps = self.env["ir.ui.menu"].sudo().search([("parent_id", "=", False)])
-        if not apps:
-            return {}
-
-        xmlids = apps._get_menuitems_xmlids()
-        module_name_by_app_id = {}
-        module_names = set()
-        for app_id, xmlid in xmlids.items():
-            module_name = xmlid.split(".", 1)[0] if xmlid and "." in xmlid else False
-            if module_name:
-                module_name_by_app_id[app_id] = module_name
-                module_names.add(module_name)
-        if not module_names:
-            return {}
+        # `complete_name` (`ir.model.data`, core) is always `"<module>.<name>"`
+        # for every entry `_get_menuitems_xmlids()` returns — `partition()`
+        # never raises even on an unexpected empty string, and an app that
+        # somehow yields an empty module name simply fails to match any
+        # module below (falls through to "no category", same as any other
+        # app absent from the result).
+        module_name_by_app_id = {
+            app_id: xmlid.partition(".")[0]
+            for app_id, xmlid in apps._get_menuitems_xmlids().items()
+        }
+        module_names = set(module_name_by_app_id.values())
 
         category_id_by_module = {}
         for module in (
@@ -463,8 +466,6 @@ class BackendTheme(models.Model):
         ):
             if module["category_id"]:
                 category_id_by_module[module["name"]] = module["category_id"][0]
-        if not category_id_by_module:
-            return {}
 
         category_info_by_id = {
             category["id"]: {
