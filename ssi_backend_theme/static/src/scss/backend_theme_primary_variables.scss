@@ -1,0 +1,20 @@
+// Copyright 2026 OpenSynergy Indonesia
+// Copyright 2026 PT. Simetri Sinergi Indonesia
+// License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
+// Bridges the two Odoo brand variables that drive the most visible
+// backend surfaces — $o-brand-odoo (navbar background) and
+// $o-brand-primary (Bootstrap $primary: buttons, links, badges, active
+// state) — to CSS custom properties. This lets the OWL service in
+// static/src/js apply the active `backend_theme` colors at runtime,
+// after the page has already loaded, without recompiling SCSS.
+//
+// Registered with `prepend` on `web._assets_primary_variables` (see
+// __manifest__.py) so this file is compiled BEFORE
+// web/static/src/scss/primary_variables.scss declares the same
+// variables with `!default` — the first `!default` assignment wins,
+// so ours must run first. The literal fallback below matches Odoo's
+// own $o-community-color, so the backend looks unchanged until the
+// service actually sets --ssi-color-primary / --ssi-color-navbar-bg.
+$o-brand-odoo: var(--ssi-color-navbar-bg, #71639e) !default;
+$o-brand-primary: var(--ssi-color-primary, #71639e) !default;

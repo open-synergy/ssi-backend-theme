@@ -1,0 +1,147 @@
+scenarios:
+  - name: "Selecting an active theme in Settings is read back"
+    steps:
+      - step: "Create a theme to select as active"
+        action: "create"
+        model: "backend_theme"
+        save_as: "theme_a"
+        values:
+          name: "Theme A"
+          code: "RCS101"
+          color_primary: "#112233"
+
+      - step: "Open Settings and select it as the active theme"
+        action: "create"
+        model: "res.config.settings"
+        save_as: "settings_write"
+        values:
+          backend_theme_active_id: "REC: theme_a.id"
+
+      - step: "Save Settings (triggers set_values)"
+        action: "call"
+        target: "settings_write"
+        method: "execute"
+
+      - step: "Open Settings again (triggers get_values via default_get)"
+        action: "create"
+        model: "res.config.settings"
+        save_as: "settings_read"
+        values: {}
+
+      - step: "Assert the same theme is read back"
+        action: "assert"
+        target: "settings_read"
+        asserts:
+          backend_theme_active_id:
+            type: "m2o"
+            expected: "REC: theme_a"
+
+  - name: "No active theme configured resolves to an empty pointer"
+    steps:
+      - step: "Explicitly clear the active theme pointer"
+        action: "create"
+        model: "res.config.settings"
+        save_as: "settings_clear"
+        values:
+          backend_theme_active_id: false
+
+      - step: "Save Settings (triggers set_values)"
+        action: "call"
+        target: "settings_clear"
+        method: "execute"
+
+      - step: "Open Settings again (triggers get_values via default_get)"
+        action: "create"
+        model: "res.config.settings"
+        save_as: "settings_read"
+        values: {}
+
+      - step: "Assert the pointer is empty, not an error"
+        action: "assert"
+        target: "settings_read"
+        asserts:
+          backend_theme_active_id:
+            type: "value"
+            operator: "is_falsy"
+
+  - name: "Deleting the active theme resolves back to an empty pointer"
+    steps:
+      - step: "Create a theme to select as active"
+        action: "create"
+        model: "backend_theme"
+        save_as: "theme_c"
+        values:
+          name: "Theme C"
+          code: "RCS102"
+
+      - step: "Select it as the active theme"
+        action: "create"
+        model: "res.config.settings"
+        save_as: "settings_write"
+        values:
+          backend_theme_active_id: "REC: theme_c.id"
+
+      - step: "Save Settings (triggers set_values)"
+        action: "call"
+        target: "settings_write"
+        method: "execute"
+
+      - step: "Delete the active theme"
+        action: "unlink"
+        target: "theme_c"
+
+      - step: "Open Settings again (triggers get_values via default_get)"
+        action: "create"
+        model: "res.config.settings"
+        save_as: "settings_read"
+        values: {}
+
+      - step: "Assert the pointer is empty, not an error"
+        action: "assert"
+        target: "settings_read"
+        asserts:
+          backend_theme_active_id:
+            type: "value"
+            operator: "is_falsy"
+
+  - name: "Archiving the active theme resolves back to an empty pointer"
+    steps:
+      - step: "Create a theme to select as active"
+        action: "create"
+        model: "backend_theme"
+        save_as: "theme_d"
+        values:
+          name: "Theme D"
+          code: "RCS103"
+
+      - step: "Select it as the active theme"
+        action: "create"
+        model: "res.config.settings"
+        save_as: "settings_write"
+        values:
+          backend_theme_active_id: "REC: theme_d.id"
+
+      - step: "Save Settings (triggers set_values)"
+        action: "call"
+        target: "settings_write"
+        method: "execute"
+
+      - step: "Archive the active theme"
+        action: "write"
+        target: "theme_d"
+        values:
+          active: false
+
+      - step: "Open Settings again (triggers get_values via default_get)"
+        action: "create"
+        model: "res.config.settings"
+        save_as: "settings_read"
+        values: {}
+
+      - step: "Assert the pointer is empty, not an error"
+        action: "assert"
+        target: "settings_read"
+        asserts:
+          backend_theme_active_id:
+            type: "value"
+            operator: "is_falsy"

@@ -1,0 +1,17 @@
+// Copyright 2026 OpenSynergy Indonesia
+// Copyright 2026 PT. Simetri Sinergi Indonesia
+// License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
+// Low-level Bootstrap variable overrides. Registered with `prepend`
+// on `web._assets_backend_helpers` (see __manifest__.py), so this file
+// runs BEFORE web/static/src/scss/bootstrap_overridden.scss assigns
+// the same variables with `!default`.
+//
+// $font-family-sans-serif is bridged to a CSS custom property the
+// same way as the brand colors in backend_theme_primary_variables.scss,
+// so the active theme's `font_family` can be applied at runtime by the
+// OWL service. $border-radius has no corresponding `backend_theme`
+// field yet; it is re-declared here at Odoo's own default only so the
+// override point exists and is wired correctly for a future field.
+$border-radius: .25rem !default;
+$font-family-sans-serif: var(--ssi-font-family, sans-serif) !default;

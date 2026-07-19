@@ -14,15 +14,32 @@ COLOR_FIELD_NAMES = (
     "color_navbar_text",
 )
 
+# ir.config_parameter key holding the id of the active backend_theme
+# record. Intentionally a single pointer (not a boolean `is_active` on
+# the theme itself) so "which theme is active" can never become
+# inconsistent/duplicated.
+CONFIG_PARAM_ACTIVE_THEME_ID = "ssi_backend_theme.active_theme_id"
+
+# Fallback values applied when there is no active theme (parameter
+# unset, pointing to a deleted record, or pointing to an archived
+# theme). Match Odoo's own defaults ($o-community-color / navbar entry
+# color / system font stack) so the backend looks the same whether or
+# not this module resolves an active theme.
+DEFAULT_COLOR_PRIMARY = "#71639e"
+DEFAULT_COLOR_NAVBAR_BG = "#71639e"
+DEFAULT_COLOR_NAVBAR_TEXT = "#ffffff"
+DEFAULT_FONT_FAMILY = "sans-serif"
+
 
 class BackendTheme(models.Model):
     """Represents a reusable backend UI theme preset.
 
     Stores a preset's brand color palette and typography (name, code,
     colors, font) as master data, so a deployment can pick a preset
-    without touching code. This model only manages the presets
-    themselves; designating which preset is active and applying it to
-    the browser is out of scope and handled by a separate module.
+    without touching code. An administrator designates the active theme
+    from Settings (see `res.config.settings`); its values are then
+    exposed to the browser through `ir.http.session_info()` and applied
+    as CSS custom properties by an OWL service.
     """
 
     _name = "backend_theme"
@@ -99,3 +116,47 @@ class BackendTheme(models.Model):
         if not value:
             return True
         return bool(HEX_COLOR_RE.match(value))
+
+    @api.model
+    def _get_active_theme(self):
+        """Resolve the theme pointed to by the active-theme system parameter.
+
+        Any inconsistency (parameter unset, pointing to a deleted
+        record, or pointing to an archived theme) is treated as "no
+        active theme" — returns an empty recordset instead of raising
+        an error, so callers (Settings, ``session_info()``) can safely
+        fall back to defaults.
+        """
+        icp = self.env["ir.config_parameter"].sudo()
+        param_value = icp.get_param(CONFIG_PARAM_ACTIVE_THEME_ID)
+        if not param_value:
+            return self.browse()
+        try:
+            theme_id = int(param_value)
+        except (TypeError, ValueError):
+            return self.browse()
+        # `browse()` never applies the active domain, so archived
+        # themes are still reachable here; `exists()` only guards
+        # against a deleted record id.
+        theme = self.browse(theme_id).exists()
+        if not theme or not theme.active:
+            return self.browse()
+        return theme
+
+    @api.model
+    def _get_backend_theme_session_values(self):
+        """Build the ``backend_theme`` payload exposed via ``session_info()``.
+
+        Always returns concrete values (never ``False``) so the
+        browser-side service can apply them unconditionally: when there
+        is no active theme, the module's own defaults are used instead.
+        """
+        theme = self._get_active_theme()
+        return {
+            "id": theme.id,
+            "name": theme.name if theme else False,
+            "color_primary": theme.color_primary or DEFAULT_COLOR_PRIMARY,
+            "color_navbar_bg": theme.color_navbar_bg or DEFAULT_COLOR_NAVBAR_BG,
+            "color_navbar_text": theme.color_navbar_text or DEFAULT_COLOR_NAVBAR_TEXT,
+            "font_family": theme.font_family or DEFAULT_FONT_FAMILY,
+        }

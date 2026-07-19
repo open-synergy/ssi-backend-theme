@@ -12,8 +12,13 @@ typography) that a deployment can pick from without touching code.
 
 Each theme preset stores optional brand colors (primary, navbar background,
 navbar text), typography (font family, base font size), and defaults for
-sidebar state and color scheme. Designating which preset is active and
-applying it to the browser is out of scope for this module.
+sidebar state and color scheme.
+
+An administrator can designate one theme preset as the active backend theme
+from *Settings*. Once selected, its colors and font are applied to the
+backend UI as CSS custom properties after the browser reloads. If no theme
+is active, or the active one is deleted or archived, the backend falls back
+to the default look.
 
 
 Installation

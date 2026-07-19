@@ -14,6 +14,8 @@
     "application": False,
     "depends": [
         "ssi_master_data_mixin",
+        "web",
+        "base_setup",
     ],
     "data": [
         "security/ir_module_category/backend_theme.xml",
@@ -23,5 +25,24 @@
         "sequence_template/backend_theme.xml",
         "menu.xml",
         "views/backend_theme.xml",
+        "views/res_config_settings.xml",
     ],
+    "assets": {
+        "web._assets_primary_variables": [
+            (
+                "prepend",
+                "ssi_backend_theme/static/src/scss/"
+                "backend_theme_primary_variables.scss",
+            ),
+        ],
+        "web._assets_backend_helpers": [
+            (
+                "prepend",
+                "ssi_backend_theme/static/src/scss/backend_theme_backend_helpers.scss",
+            ),
+        ],
+        "web.assets_backend": [
+            "ssi_backend_theme/static/src/js/*",
+        ],
+    },
 }
